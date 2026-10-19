@@ -350,30 +350,59 @@ end
 
 local function eggShrine(parent, world, pos, index)
 	local model = Instance.new("Model")
-	model.Name = world.Key .. "_Egg_" .. index
+	model.Name = world.Key .. "_Capsule_" .. index
 	model.Parent = parent
 
 	local accent = world.Accent
-	cylinder(model, "Pedestal", 13, 3.5, CFrame.new(pos), Color3.fromRGB(57, 61, 69), Enum.Material.Slate)
-	cylinder(model, "Ring", 15, 0.55, CFrame.new(pos + Vector3.new(0, 2.1, 0)), accent, Enum.Material.Neon, 0.04)
+	local dark = Color3.fromRGB(39, 43, 52)
+	local metal = Color3.fromRGB(83, 89, 101)
 
-	local egg = part(model, "Egg", Vector3.new(6.2, 8.4, 6.2), CFrame.new(pos + Vector3.new(0, 7, 0)), Color3.fromRGB(239, 241, 247), Enum.Material.SmoothPlastic)
-	egg.Shape = Enum.PartType.Ball
-	egg.CanCollide = false
-	pointLight(egg, accent, 18, 2)
-	addHighlight(egg, accent)
+	-- Raised steal-machine platform.
+	cylinder(model, "Platform", 18, 1.3, CFrame.new(pos), Color3.fromRGB(94, 96, 99), Enum.Material.Concrete)
+	cylinder(model, "PlatformInset", 14.8, 0.35, CFrame.new(pos + Vector3.new(0, 0.85, 0)), dark, Enum.Material.Metal)
+	cylinder(model, "PlatformRing", 12.8, 0.18, CFrame.new(pos + Vector3.new(0, 1.15, 0)), accent, Enum.Material.Neon, 0.18)
 
-	local pr = prompt(egg, "VOLER", "Oeuf " .. world.DisplayName, 0.55)
-	floatingLabel(egg, "OEUF", accent, 90, 24, Vector3.new(0, 5.8, 0), 70)
+	-- Capsule shell: dark top/bottom + glass chamber.
+	cylinder(model, "CapsuleBase", 10.8, 2.4, CFrame.new(pos + Vector3.new(0, 2.6, 0)), dark, Enum.Material.Metal)
+	local glass = cylinder(model, "CapsuleGlass", 9.5, 8.4, CFrame.new(pos + Vector3.new(0, 7.8, 0)), Color3.fromRGB(188, 232, 255), Enum.Material.Glass, 0.6)
+	glass.CastShadow = false
+	cylinder(model, "CapsuleTop", 10.8, 2.0, CFrame.new(pos + Vector3.new(0, 12.8, 0)), metal, Enum.Material.Metal)
+	cylinder(model, "CapsuleTopRing", 9.2, 0.28, CFrame.new(pos + Vector3.new(0, 13.85, 0)), accent, Enum.Material.Neon, 0.12)
+
+	-- World silhouette inside the pod.
+	local core = ball(model, "CapsuleCore", 4.8, CFrame.new(pos + Vector3.new(0, 8.0, 0)), accent, Enum.Material.ForceField, 0.2)
+	core.CanCollide = false
+	pointLight(core, accent, 18, 1.6)
+	addHighlight(core, accent)
+
+	-- Simple character silhouette gives the pod a visible reward target.
+	local silhouette = Instance.new("Model")
+	silhouette.Name = "PreviewSilhouette"
+	silhouette.Parent = model
+	part(silhouette, "PreviewTorso", Vector3.new(2.6, 3.1, 1.5), CFrame.new(pos + Vector3.new(0, 8.2, -0.2)), Color3.fromRGB(47, 51, 60), Enum.Material.SmoothPlastic, 0.18)
+	part(silhouette, "PreviewLegL", Vector3.new(0.8, 2.2, 0.8), CFrame.new(pos + Vector3.new(-0.65, 5.6, -0.2)), Color3.fromRGB(39, 43, 51), Enum.Material.SmoothPlastic, 0.18)
+	part(silhouette, "PreviewLegR", Vector3.new(0.8, 2.2, 0.8), CFrame.new(pos + Vector3.new(0.65, 5.6, -0.2)), Color3.fromRGB(39, 43, 51), Enum.Material.SmoothPlastic, 0.18)
+	ball(silhouette, "PreviewHead", 2.25, CFrame.new(pos + Vector3.new(0, 10.8, -0.2)), Color3.fromRGB(57, 61, 70), Enum.Material.SmoothPlastic, 0.16)
+
+	-- Side power columns.
+	for _, x in ipairs({-7.5, 7.5}) do
+		part(model, "PowerColumn", Vector3.new(2.1, 10.5, 2.1), CFrame.new(pos + Vector3.new(x, 6.3, 0)), dark, Enum.Material.Metal)
+		part(model, "PowerStrip", Vector3.new(0.35, 7.5, 0.45), CFrame.new(pos + Vector3.new(x, 6.4, -1.08)), accent, Enum.Material.Neon, 0.16)
+		ball(model, "PowerOrb", 1.8, CFrame.new(pos + Vector3.new(x, 12.1, 0)), accent, Enum.Material.Neon, 0.08)
+	end
+
+	local pr = prompt(core, "VOLER", "Capsule " .. world.DisplayName, 0.65)
+	floatingLabel(core, "CAPSULE", Color3.fromRGB(255,255,255), 110, 24, Vector3.new(0, 7.8, 0), 75)
 
 	return {
 		WorldKey = world.Key,
 		RequiredSpeed = world.RequiredSpeed,
 		Respawn = world.EggRespawn,
 		Model = model,
-		Egg = egg,
+		Egg = core,
 		Prompt = pr,
 		Accent = accent,
+		VisualParts = model:GetDescendants(),
 	}
 end
 
@@ -834,8 +863,8 @@ function WorldBuilder.Build(Config)
 			builder(world, worldConfig)
 		end
 
-		for eggIndex, x in ipairs({-28, 28}) do
-			table.insert(eggs, eggShrine(world, worldConfig, Vector3.new(x, 2.8, z + 78), eggIndex))
+		for capsuleIndex, x in ipairs({-48, 0, 48}) do
+			table.insert(eggs, eggShrine(world, worldConfig, Vector3.new(x, 2.8, z + 78), capsuleIndex))
 		end
 
 		local worldTitle = part(world, worldConfig.Key .. "_TitleAnchor", Vector3.new(1,1,1), CFrame.new(0, 28, z - 80), Color3.new(1,1,1), Enum.Material.Neon, 1)
