@@ -5,6 +5,7 @@ local HttpService = game:GetService("HttpService")
 
 local Config = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("GameConfig"))
 local WorldBuilder = require(script:WaitForChild("WorldBuilder"))
+local HeroFactory = require(script:WaitForChild("HeroFactory"))
 
 local remotes = ReplicatedStorage:FindFirstChild("AnimeEggRemotes") or Instance.new("Folder")
 remotes.Name = "AnimeEggRemotes"
@@ -66,6 +67,7 @@ local eggs = built.Eggs
 local gates = built.Gates or {}
 
 local playerData = {}
+local followerModels = {}
 local random = Random.new()
 
 local function notify(player, message, kind)
@@ -84,7 +86,7 @@ local function computeIncome(player)
 
 	local total = 0
 	for _, hero in ipairs(data.Heroes) do
-		total += rarityData(hero.Rarity).Income
+		total += Config.GetHeroIncome(hero)
 	end
 
 	return math.floor(total * Config.GetIncomeMultiplier(data.BaseLevel))
@@ -173,6 +175,7 @@ local function updatePlayerAttributes(player)
 	player:SetAttribute("IncomePerSecond", computeIncome(player))
 	player:SetAttribute("CarryingName", data.Carry and data.Carry.Name or "")
 	player:SetAttribute("CarryingRarity", data.Carry and data.Carry.Rarity or "")
+	player:SetAttribute("CarryingWorld", data.Carry and data.Carry.WorldKey or "")
 end
 
 local function updateWalkSpeed(player)
@@ -186,48 +189,29 @@ local function updateWalkSpeed(player)
 end
 
 local function clearCarryVisual(player)
+	local follower = followerModels[player]
+	if follower then
+		followerModels[player] = nil
+		if follower.Parent then
+			follower:Destroy()
+		end
+	end
+
 	local character = player.Character
-	if not character then return end
-	local old = character:FindFirstChild("CarriedObject")
-	if old then old:Destroy() end
+	if character then
+		local old = character:FindFirstChild("CarriedObject")
+		if old then old:Destroy() end
+	end
 end
 
 local function createCarryVisual(player, carry)
 	clearCarryVisual(player)
-
-	local character = player.Character
-	local root = character and character:FindFirstChild("HumanoidRootPart")
-	if not root then return end
-
-	local model = Instance.new("Model")
-	model.Name = "CarriedObject"
-	model.Parent = character
-
 	local rarity = rarityData(carry.Rarity)
-	local main = Instance.new("Part")
-	main.Name = "Carry"
-	main.Shape = carry.Source == "Egg" and Enum.PartType.Ball or Enum.PartType.Block
-	main.Size = carry.Source == "Egg" and Vector3.new(4.6, 5.7, 4.6) or Vector3.new(4.2, 5.2, 3)
-	main.Color = rarity.Color
-	main.Material = Enum.Material.SmoothPlastic
-	main.CanCollide = false
-	main.Massless = true
-	main.CFrame = root.CFrame * CFrame.new(0, 2.2, -3.1)
-	main.Parent = model
-
-	local weld = Instance.new("WeldConstraint")
-	weld.Part0 = root
-	weld.Part1 = main
-	weld.Parent = main
-
-	local light = Instance.new("PointLight")
-	light.Color = rarity.Color
-	light.Brightness = 1.7
-	light.Range = 11
-	light.Parent = main
-
-	billboard(main, carry.Name .. "\n" .. carry.Rarity, rarity.Color, Vector3.new(0, 4.2, 0))
-	model.PrimaryPart = main
+	local follower = HeroFactory.CreateFollower(player, carry, rarity.Color)
+	if follower then
+		follower:SetAttribute("FollowingUserId", player.UserId)
+		followerModels[player] = follower
+	end
 end
 
 local function setCarry(player, item)
@@ -254,71 +238,43 @@ local function createHeroVisual(owner, hero, index)
 	local base = bases[data.BaseIndex]
 	if not base then return end
 
-	local style = HERO_STYLES[hero.Name] or WORLD_STYLES[hero.WorldKey] or {
-		Body = Color3.fromRGB(75, 82, 99),
-		Accent = rarityData(hero.Rarity).Color,
-		Hair = Color3.fromRGB(42, 43, 47),
-	}
 	local rarity = rarityData(hero.Rarity)
 	local cf = heroStandCFrame(base, index)
+	local scale = hero.Rarity == "Secret" and 0.92 or hero.Rarity == "Mythic" and 0.86 or 0.78
 
-	local model = Instance.new("Model")
+	local model = HeroFactory.Create(hero, rarity.Color, scale)
 	model.Name = hero.Id
 	model:SetAttribute("HeroId", hero.Id)
 	model:SetAttribute("OwnerUserId", owner.UserId)
 	model:SetAttribute("Rarity", hero.Rarity)
+	model:SetAttribute("WorldKey", hero.WorldKey or "Naruto")
+	model:SetAttribute("Income", Config.GetHeroIncome(hero))
 	model.Parent = base.HeroFolder
+	model:PivotTo(cf)
 
-	local scale = hero.Rarity == "Secret" and 1.25 or hero.Rarity == "Mythic" and 1.15 or 1
-	local root = makePart(model, "Root", Vector3.new(3.8 * scale, 4.7 * scale, 2.7 * scale), cf, style.Body, Enum.Material.SmoothPlastic)
-	local legs = {
-		makePart(model, "LegL", Vector3.new(1.5 * scale, 3.2 * scale, 1.6 * scale), cf * CFrame.new(-1, -3.5 * scale, 0), Color3.fromRGB(43, 46, 54), Enum.Material.SmoothPlastic),
-		makePart(model, "LegR", Vector3.new(1.5 * scale, 3.2 * scale, 1.6 * scale), cf * CFrame.new(1, -3.5 * scale, 0), Color3.fromRGB(43, 46, 54), Enum.Material.SmoothPlastic),
-	}
-	for _, leg in ipairs(legs) do leg.CanCollide = false end
-
-	local head = makePart(model, "Head", Vector3.new(3.2 * scale, 3.2 * scale, 3.2 * scale), cf * CFrame.new(0, 4.1 * scale, 0), Color3.fromRGB(239, 198, 165), Enum.Material.SmoothPlastic)
-	head.Shape = Enum.PartType.Ball
-	head.CanCollide = false
-
-	local hair = makePart(model, "Hair", Vector3.new(3.6 * scale, 1.5 * scale, 3.6 * scale), cf * CFrame.new(0, 5.5 * scale, 0), style.Hair, Enum.Material.SmoothPlastic)
-	hair.Shape = Enum.PartType.Ball
-	hair.CanCollide = false
-
-	local band = makePart(model, "Headband", Vector3.new(3.4 * scale, 0.65 * scale, 3.45 * scale), cf * CFrame.new(0, 4.8 * scale, -0.15), style.Accent, Enum.Material.Metal)
-	band.CanCollide = false
-
-	makePart(model, "Aura", Vector3.new(6.5 * scale, 0.25, 6.5 * scale), cf * CFrame.new(0, -5.1 * scale, 0), rarity.Color, Enum.Material.Neon, 0.16)
-
-	if hero.Rarity == "Legendary" or hero.Rarity == "Mythic" or hero.Rarity == "Secret" then
-		for i = 1, 6 do
-			local angle = math.rad(i * 60)
-			local orb = makePart(
-				model,
-				"AuraOrb",
-				Vector3.new(0.8 * scale, 0.8 * scale, 0.8 * scale),
-				cf * CFrame.new(math.cos(angle) * 4.2 * scale, 1 + (i % 2) * 2, math.sin(angle) * 4.2 * scale),
-				rarity.Color,
-				Enum.Material.Neon,
-				0.05
-			)
-			orb.Shape = Enum.PartType.Ball
-			orb.CanCollide = false
-		end
+	local root = model.PrimaryPart
+	if not root then
+		model:Destroy()
+		return
 	end
 
-	model.PrimaryPart = root
-	billboard(root, hero.Name .. "\n" .. hero.Rarity .. "  $" .. rarity.Income .. "/s", rarity.Color, Vector3.new(0, 6.6 * scale, 0))
+	local incomeTag = billboard(
+		root,
+		"$" .. tostring(Config.GetHeroIncome(hero)) .. "/s",
+		rarity.Color,
+		Vector3.new(0, 5.5 * scale, 0)
+	)
+	incomeTag.MaxDistance = 60
 
-	local prompt = Instance.new("ProximityPrompt")
-	prompt.ActionText = "VOLER"
-	prompt.ObjectText = hero.Name
-	prompt.HoldDuration = 1
-	prompt.MaxActivationDistance = 10
-	prompt.RequiresLineOfSight = false
-	prompt.Parent = root
+	local stealPrompt = Instance.new("ProximityPrompt")
+	stealPrompt.ActionText = "VOLER"
+	stealPrompt.ObjectText = hero.Name
+	stealPrompt.HoldDuration = 1
+	stealPrompt.MaxActivationDistance = 10
+	stealPrompt.RequiresLineOfSight = false
+	stealPrompt.Parent = root
 
-	prompt.Triggered:Connect(function(thief)
+	stealPrompt.Triggered:Connect(function(thief)
 		if thief == owner then
 			notify(thief, "C'est ton héros.", "Info")
 			return
@@ -328,7 +284,7 @@ local function createHeroVisual(owner, hero, index)
 		local ownerData = playerData[owner]
 		if not thiefData or not ownerData then return end
 		if thiefData.Carry then
-			notify(thief, "Tu portes déjà quelque chose.", "Error")
+			notify(thief, "Un héros te suit déjà.", "Error")
 			return
 		end
 
@@ -363,7 +319,7 @@ local function createHeroVisual(owner, hero, index)
 		removed.Source = "StolenHero"
 		setCarry(thief, removed)
 		updatePlayerAttributes(owner)
-		notify(thief, "Tu as volé " .. removed.Name .. " ! Ramène-le à ta base.", "Success")
+		notify(thief, removed.Name .. " te suit ! Ramène-le à ta base.", "Success")
 		notify(owner, thief.DisplayName .. " vole " .. removed.Name .. " !", "Danger")
 	end)
 end
@@ -525,7 +481,7 @@ for index, eggInfo in ipairs(eggs) do
 		local data = playerData[player]
 		if not data then return end
 		if data.Carry then
-			notify(player, "Tu portes déjà quelque chose.", "Error")
+			notify(player, "Un héros te suit déjà.", "Error")
 			return
 		end
 		if #data.Heroes >= Config.MaxHeroes then
@@ -547,12 +503,12 @@ for index, eggInfo in ipairs(eggs) do
 
 		local rolled = Config.RollWorldHero(eggInfo.WorldKey, random)
 		rolled.Id = HttpService:GenerateGUID(false)
-		rolled.Source = "Egg"
+		rolled.Source = "Capsule"
 		setCarry(player, rolled)
 
 		local world = Config.GetWorld(eggInfo.WorldKey)
 		local worldName = world and world.DisplayName or "WORLD"
-		notify(player, rolled.Rarity .. " - " .. rolled.Name .. " ! Retourne à ta base.", "Success")
+		notify(player, rolled.Rarity .. " - " .. rolled.Name .. " sort de la capsule et te suit ! Retourne à ta base.", "Success")
 
 		task.delay((eggInfo.Respawn or 10) + (index % 3), function()
 			if eggInfo.Egg and eggInfo.Egg.Parent then
@@ -707,7 +663,7 @@ local function setupPlayer(player)
 
 	task.delay(1.5, function()
 		if player.Parent == Players then
-			notify(player, "Ta base est prête. Traverse la porte et vole un ŒUF NINJA !", "Success")
+			notify(player, "Ta base est prête. Gagne de la Speed, vole une capsule et ramène le héros.", "Success")
 		end
 	end)
 end
@@ -788,4 +744,4 @@ game:BindToClose(function()
 	task.wait(1)
 end)
 
-print(Config.GameName .. " - polished hub + Naruto world loaded")
+print(Config.GameName .. " - complete capsule heist progression loaded")
