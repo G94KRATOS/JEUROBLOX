@@ -282,7 +282,8 @@ local function makeBase(parent, index, center, accent)
 	machine.Parent = model
 	part(machine,"MachineBody",Vector3.new(22,12,8),CFrame.new(center+Vector3.new(0,6.4,19)),machineDark,Enum.Material.Metal)
 	part(machine,"MachineTop",Vector3.new(24,2,10),CFrame.new(center+Vector3.new(0,13.4,19)),Color3.fromRGB(64,69,78),Enum.Material.Metal)
-	part(machine,"MachineScreen",Vector3.new(10,6,0.45),CFrame.new(center+Vector3.new(0,7,14.8)),Color3.fromRGB(87,194,255),Enum.Material.Glass,0.12)
+	local machineScreen=part(machine,"MachineScreen",Vector3.new(10,6,0.45),CFrame.new(center+Vector3.new(0,7,14.8)),Color3.fromRGB(87,194,255),Enum.Material.Glass,0.12)
+	local incomeLabel=surfaceLabel(machineScreen,Enum.NormalId.Front,"$0/s",Color3.fromRGB(240,250,255),Color3.fromRGB(36,52,67))
 	part(machine,"MachineScreenGlow",Vector3.new(7,0.4,0.15),CFrame.new(center+Vector3.new(0,4.8,14.5)),accent,Enum.Material.Neon,0.12)
 	for _,x in ipairs({-7,7}) do
 		part(machine,"Antenna",Vector3.new(0.8,8,0.8),CFrame.new(center+Vector3.new(x,18,19)),woodDark,Enum.Material.Metal)
@@ -296,7 +297,8 @@ local function makeBase(parent, index, center, accent)
 
 	-- Speed station.
 	part(model,"SpeedMachine",Vector3.new(12,7,7),CFrame.new(center+Vector3.new(-20,3.8,-3)),machineDark,Enum.Material.Metal)
-	part(model,"SpeedScreen",Vector3.new(8,3.6,0.35),CFrame.new(center+Vector3.new(-20,4.2,-6.6)),Color3.fromRGB(66,194,255),Enum.Material.Glass,0.14)
+	local speedScreen = part(model,"SpeedScreen",Vector3.new(8,3.6,0.35),CFrame.new(center+Vector3.new(-20,4.2,-6.6)),Color3.fromRGB(66,194,255),Enum.Material.Glass,0.14)
+	local trainingLabel = surfaceLabel(speedScreen,Enum.NormalId.Front,"SPEED LV.1",Color3.fromRGB(240,250,255),Color3.fromRGB(35,52,67))
 	local training = part(model,"TrainingPad",Vector3.new(14,0.35,8),CFrame.new(center+Vector3.new(-20,1,-12)),Color3.fromRGB(69,190,238),Enum.Material.Glass,0.18)
 	for z=-3,3,1.5 do
 		part(model,"SpeedStripe",Vector3.new(11,0.07,0.25),CFrame.new(center+Vector3.new(-20,1.3,-12+z)),Color3.fromRGB(220,248,255),Enum.Material.Neon,0.3)
@@ -346,6 +348,7 @@ local function makeBase(parent, index, center, accent)
 		Index=index,Model=model,Position=center,Accent=accent,SignLabel=signLabel,
 		Deposit=deposit,TrainingPad=training,BasePrompt=basePrompt,TrainingPrompt=trainingPrompt,
 		ShieldPrompt=shieldPrompt,ShieldWalls=shieldWalls,HeroFolder=heroFolder,StandPositions=standPositions,
+		IncomeLabel=incomeLabel,TrainingLabel=trainingLabel,
 	}
 end
 
