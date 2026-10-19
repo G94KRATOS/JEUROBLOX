@@ -27,409 +27,298 @@ gui.IgnoreGuiInset = false
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 gui.Parent = playerGui
 
-local COLORS = {
-	Panel = Color3.fromRGB(16, 18, 28),
-	Panel2 = Color3.fromRGB(24, 27, 40),
-	Purple = Color3.fromRGB(154, 95, 255),
-	Pink = Color3.fromRGB(255, 91, 187),
-	Cyan = Color3.fromRGB(77, 215, 255),
-	Gold = Color3.fromRGB(255, 211, 78),
-	Green = Color3.fromRGB(81, 230, 143),
-	Red = Color3.fromRGB(255, 91, 105),
-	Text = Color3.fromRGB(245, 247, 255),
-	Muted = Color3.fromRGB(163, 172, 195),
+local C = {
+	Dark = Color3.fromRGB(30, 34, 44),
+	Panel = Color3.fromRGB(40, 45, 56),
+	Green = Color3.fromRGB(76, 220, 73),
+	Blue = Color3.fromRGB(64, 185, 255),
+	Orange = Color3.fromRGB(255, 169, 55),
+	Red = Color3.fromRGB(255, 78, 80),
+	Purple = Color3.fromRGB(174, 87, 255),
+	Yellow = Color3.fromRGB(255, 226, 72),
+	White = Color3.fromRGB(255, 255, 255),
+	Muted = Color3.fromRGB(190, 198, 210),
 }
 
 local function corner(parent, radius)
-	local c = Instance.new("UICorner")
-	c.CornerRadius = UDim.new(0, radius)
-	c.Parent = parent
-	return c
+	local x = Instance.new("UICorner")
+	x.CornerRadius = UDim.new(0, radius)
+	x.Parent = parent
+	return x
 end
 
-local function stroke(parent, color, transparency, thickness)
-	local s = Instance.new("UIStroke")
-	s.Color = color or COLORS.Purple
-	s.Transparency = transparency or 0.35
-	s.Thickness = thickness or 1.4
-	s.Parent = parent
-	return s
+local function stroke(parent, color, thickness, transparency)
+	local x = Instance.new("UIStroke")
+	x.Color = color or Color3.new(0,0,0)
+	x.Thickness = thickness or 2
+	x.Transparency = transparency or 0
+	x.Parent = parent
+	return x
 end
 
-local function gradient(parent, c1, c2, rotation)
-	local g = Instance.new("UIGradient")
-	g.Color = ColorSequence.new(c1, c2)
-	g.Rotation = rotation or 0
-	g.Parent = parent
-	return g
+local function text(parent, value, size, pos, textSize, color, font, align)
+	local l = Instance.new("TextLabel")
+	l.BackgroundTransparency = 1
+	l.Size = size
+	l.Position = pos or UDim2.new()
+	l.Text = value
+	l.TextSize = textSize or 18
+	l.TextColor3 = color or C.White
+	l.Font = font or Enum.Font.GothamBold
+	l.TextXAlignment = align or Enum.TextXAlignment.Left
+	l.TextYAlignment = Enum.TextYAlignment.Center
+	l.TextStrokeTransparency = 0.8
+	l.Parent = parent
+	return l
 end
 
-local function padding(parent, left, right, top, bottom)
-	local p = Instance.new("UIPadding")
-	p.PaddingLeft = UDim.new(0, left or 0)
-	p.PaddingRight = UDim.new(0, right or 0)
-	p.PaddingTop = UDim.new(0, top or 0)
-	p.PaddingBottom = UDim.new(0, bottom or 0)
-	p.Parent = parent
-	return p
-end
-
-local function label(parent, text, size, pos, textSize, font, color, align)
-	local t = Instance.new("TextLabel")
-	t.BackgroundTransparency = 1
-	t.Size = size
-	t.Position = pos or UDim2.new()
-	t.Text = text
-	t.TextColor3 = color or COLORS.Text
-	t.TextSize = textSize or 16
-	t.Font = font or Enum.Font.GothamBold
-	t.TextXAlignment = align or Enum.TextXAlignment.Left
-	t.TextYAlignment = Enum.TextYAlignment.Center
-	t.Parent = parent
-	return t
-end
-
-local function button(parent, text, size, color1, color2)
+local function actionButton(parent, title, color, y)
 	local b = Instance.new("TextButton")
-	b.Size = size
-	b.BackgroundColor3 = color1 or COLORS.Panel2
-	b.Text = text
-	b.TextColor3 = COLORS.Text
-	b.TextSize = 15
-	b.Font = Enum.Font.GothamBold
+	b.Size = UDim2.fromOffset(132, 47)
+	b.Position = UDim2.fromOffset(14, y)
+	b.BackgroundColor3 = color
+	b.Text = title
+	b.TextColor3 = C.White
+	b.TextSize = 18
+	b.Font = Enum.Font.GothamBlack
 	b.AutoButtonColor = false
 	b.Parent = parent
-	corner(b, 13)
-	stroke(b, color2 or COLORS.Purple, 0.45, 1.2)
-	if color2 then
-		gradient(b, color1, color2, 0)
-	end
+	corner(b, 7)
+	stroke(b, Color3.fromRGB(35,35,35), 3, 0.15)
 
-	local baseSize = b.Size
 	b.MouseEnter:Connect(function()
-		TweenService:Create(b, TweenInfo.new(0.12), {Size = UDim2.new(baseSize.X.Scale, baseSize.X.Offset + 5, baseSize.Y.Scale, baseSize.Y.Offset + 3)}):Play()
+		TweenService:Create(b, TweenInfo.new(0.1), {Size = UDim2.fromOffset(138, 50)}):Play()
 	end)
 	b.MouseLeave:Connect(function()
-		TweenService:Create(b, TweenInfo.new(0.12), {Size = baseSize}):Play()
+		TweenService:Create(b, TweenInfo.new(0.1), {Size = UDim2.fromOffset(132, 47)}):Play()
 	end)
 	return b
 end
 
-local vignette = Instance.new("Frame")
-vignette.Size = UDim2.fromScale(1, 1)
-vignette.BackgroundColor3 = Color3.new(0, 0, 0)
-vignette.BackgroundTransparency = 0.94
-vignette.BorderSizePixel = 0
-vignette.ZIndex = 0
-vignette.Parent = gui
+local menu = Instance.new("Frame")
+menu.Size = UDim2.fromOffset(160, 190)
+menu.Position = UDim2.fromOffset(0, 120)
+menu.BackgroundTransparency = 1
+menu.Parent = gui
 
-local top = Instance.new("Frame")
-top.AnchorPoint = Vector2.new(0.5, 0)
-top.Position = UDim2.new(0.5, 0, 0, 18)
-top.Size = UDim2.new(0, 730, 0, 72)
-top.BackgroundColor3 = COLORS.Panel
-top.BackgroundTransparency = 0.05
-top.ZIndex = 10
-top.Parent = gui
-corner(top, 20)
-stroke(top, COLORS.Purple, 0.25, 1.5)
+local shopButton = actionButton(menu, "SHOP", C.Green, 0)
+local indexButton = actionButton(menu, "INDEX", C.Blue, 55)
+local baseButton = actionButton(menu, "MY BASE", C.Orange, 110)
 
-local topGlow = Instance.new("Frame")
-topGlow.Size = UDim2.new(1, -18, 0, 3)
-topGlow.Position = UDim2.new(0, 9, 1, -5)
-topGlow.BackgroundColor3 = COLORS.Purple
-topGlow.BorderSizePixel = 0
-topGlow.ZIndex = 11
-topGlow.Parent = top
-corner(topGlow, 4)
-gradient(topGlow, COLORS.Pink, COLORS.Cyan, 0)
+local money = text(gui, "$0", UDim2.fromOffset(245, 52), UDim2.new(0, 18, 1, -77), 30, Color3.fromRGB(65, 239, 95), Enum.Font.GothamBlack)
+money.TextStrokeTransparency = 0.35
 
-label(top, "ANIME EGG", UDim2.fromOffset(118, 24), UDim2.fromOffset(22, 12), 17, Enum.Font.GothamBlack, COLORS.Text)
-label(top, "HEIST", UDim2.fromOffset(90, 24), UDim2.fromOffset(22, 36), 18, Enum.Font.GothamBlack, COLORS.Purple)
+local income = text(gui, "+$0/s", UDim2.fromOffset(170, 30), UDim2.new(0, 22, 1, -108), 18, C.Yellow, Enum.Font.GothamBlack)
 
-local separator1 = Instance.new("Frame")
-separator1.Size = UDim2.fromOffset(1, 42)
-separator1.Position = UDim2.fromOffset(154, 14)
-separator1.BackgroundColor3 = Color3.fromRGB(66, 70, 90)
-separator1.BorderSizePixel = 0
-separator1.Parent = top
+local speed = text(gui, "SPEED 0", UDim2.fromOffset(245, 40), UDim2.new(0, 18, 1, -145), 23, C.Blue, Enum.Font.GothamBlack)
 
-local coinsLabel = label(top, "$ 0", UDim2.fromOffset(155, 42), UDim2.fromOffset(175, 15), 22, Enum.Font.GothamBlack, COLORS.Gold)
-local incomeLabel = label(top, "+$0/s", UDim2.fromOffset(90, 22), UDim2.fromOffset(248, 42), 12, Enum.Font.GothamMedium, COLORS.Green)
+local progress = Instance.new("Frame")
+progress.AnchorPoint = Vector2.new(0.5, 0)
+progress.Position = UDim2.new(0.5, 0, 0, 16)
+progress.Size = UDim2.fromOffset(420, 44)
+progress.BackgroundColor3 = Color3.fromRGB(36, 39, 48)
+progress.BackgroundTransparency = 0.08
+progress.Parent = gui
+corner(progress, 10)
+stroke(progress, Color3.fromRGB(255,255,255), 1, 0.7)
 
-local speedLabel = label(top, "SPEED 0", UDim2.fromOffset(145, 42), UDim2.fromOffset(355, 15), 19, Enum.Font.GothamBlack, COLORS.Cyan)
-local heroLabel = label(top, "HEROES 0/12", UDim2.fromOffset(160, 42), UDim2.fromOffset(535, 15), 17, Enum.Font.GothamBlack, COLORS.Pink)
-
-local left = Instance.new("Frame")
-left.AnchorPoint = Vector2.new(0, 0.5)
-left.Position = UDim2.new(0, 18, 0.5, 0)
-left.Size = UDim2.fromOffset(176, 260)
-left.BackgroundTransparency = 1
-left.Parent = gui
-
-local leftLayout = Instance.new("UIListLayout")
-leftLayout.Padding = UDim.new(0, 10)
-leftLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
-leftLayout.Parent = left
-
-local shopButton = button(left, "  BOUTIQUE", UDim2.fromOffset(170, 58), Color3.fromRGB(53, 38, 85), Color3.fromRGB(101, 62, 168))
-shopButton.TextXAlignment = Enum.TextXAlignment.Left
-padding(shopButton, 20)
-
-local invButton = button(left, "  INVENTAIRE", UDim2.fromOffset(170, 58), Color3.fromRGB(35, 51, 78), Color3.fromRGB(46, 117, 162))
-invButton.TextXAlignment = Enum.TextXAlignment.Left
-padding(invButton, 20)
-
-local baseButton = button(left, "  MA BASE", UDim2.fromOffset(170, 58), Color3.fromRGB(61, 44, 62), Color3.fromRGB(129, 65, 107))
-baseButton.TextXAlignment = Enum.TextXAlignment.Left
-padding(baseButton, 20)
-
-local helpButton = button(left, "  COMMENT JOUER", UDim2.fromOffset(170, 58), Color3.fromRGB(45, 48, 60), Color3.fromRGB(79, 84, 101))
-helpButton.TextXAlignment = Enum.TextXAlignment.Left
-padding(helpButton, 20)
-
-local quest = Instance.new("Frame")
-quest.AnchorPoint = Vector2.new(1, 0.5)
-quest.Position = UDim2.new(1, -20, 0.52, 0)
-quest.Size = UDim2.fromOffset(250, 170)
-quest.BackgroundColor3 = COLORS.Panel
-quest.BackgroundTransparency = 0.06
-quest.Parent = gui
-corner(quest, 18)
-stroke(quest, COLORS.Cyan, 0.55)
-
-label(quest, "PROGRESSION", UDim2.new(1, -30, 0, 28), UDim2.fromOffset(16, 14), 14, Enum.Font.GothamBlack, COLORS.Cyan)
-
-local nextZoneLabel = label(quest, "Blossom Village", UDim2.new(1, -30, 0, 28), UDim2.fromOffset(16, 47), 16, Enum.Font.GothamBold, COLORS.Text)
-local reqLabel = label(quest, "0 Speed requis", UDim2.new(1, -30, 0, 20), UDim2.fromOffset(16, 75), 12, Enum.Font.GothamMedium, COLORS.Muted)
+local zoneText = text(progress, "NEXT: BLOSSOM VILLAGE", UDim2.new(1, -24, 1, 0), UDim2.fromOffset(12, 0), 15, C.White, Enum.Font.GothamBlack, Enum.TextXAlignment.Center)
 
 local progressBack = Instance.new("Frame")
-progressBack.Size = UDim2.new(1, -32, 0, 12)
-progressBack.Position = UDim2.fromOffset(16, 104)
-progressBack.BackgroundColor3 = Color3.fromRGB(37, 41, 56)
+progressBack.Size = UDim2.new(1, -20, 0, 5)
+progressBack.Position = UDim2.new(0, 10, 1, -7)
+progressBack.BackgroundColor3 = Color3.fromRGB(78,82,91)
 progressBack.BorderSizePixel = 0
-progressBack.Parent = quest
-corner(progressBack, 8)
+progressBack.Parent = progress
+corner(progressBack, 4)
 
 local progressFill = Instance.new("Frame")
-progressFill.Size = UDim2.new(0, 0, 1, 0)
-progressFill.BackgroundColor3 = COLORS.Cyan
+progressFill.Size = UDim2.fromScale(0, 1)
+progressFill.BackgroundColor3 = C.Green
 progressFill.BorderSizePixel = 0
 progressFill.Parent = progressBack
-corner(progressFill, 8)
-gradient(progressFill, COLORS.Purple, COLORS.Cyan, 0)
+corner(progressFill, 4)
 
-local hintLabel = label(quest, "Entraîne-toi sur ton tapis.", UDim2.new(1, -30, 0, 30), UDim2.fromOffset(16, 125), 12, Enum.Font.GothamMedium, COLORS.Muted)
+local rightHud = Instance.new("Frame")
+rightHud.AnchorPoint = Vector2.new(1, 0)
+rightHud.Position = UDim2.new(1, -18, 0, 20)
+rightHud.Size = UDim2.fromOffset(170, 84)
+rightHud.BackgroundColor3 = C.Dark
+rightHud.BackgroundTransparency = 0.1
+rightHud.Parent = gui
+corner(rightHud, 10)
+stroke(rightHud, Color3.fromRGB(255,255,255), 1, 0.75)
 
-local carryCard = Instance.new("Frame")
-carryCard.AnchorPoint = Vector2.new(0.5, 1)
-carryCard.Position = UDim2.new(0.5, 0, 1, -22)
-carryCard.Size = UDim2.fromOffset(450, 74)
-carryCard.BackgroundColor3 = COLORS.Panel
-carryCard.BackgroundTransparency = 0.03
-carryCard.Visible = false
-carryCard.Parent = gui
-corner(carryCard, 18)
-local carryStroke = stroke(carryCard, COLORS.Purple, 0.2, 1.6)
+local heroesText = text(rightHud, "HEROES 0/12", UDim2.new(1, -18, 0, 30), UDim2.fromOffset(10, 8), 15, C.White, Enum.Font.GothamBlack, Enum.TextXAlignment.Center)
+local baseLevelText = text(rightHud, "BASE LV.1", UDim2.new(1, -18, 0, 28), UDim2.fromOffset(10, 42), 14, C.Yellow, Enum.Font.GothamBold, Enum.TextXAlignment.Center)
 
-local carryTitle = label(carryCard, "TU TRANSPORTES", UDim2.fromOffset(150, 24), UDim2.fromOffset(18, 12), 12, Enum.Font.GothamBlack, COLORS.Muted)
-local carryName = label(carryCard, "", UDim2.fromOffset(250, 30), UDim2.fromOffset(18, 34), 18, Enum.Font.GothamBlack, COLORS.Text)
-local carryHint = label(carryCard, "RAMÈNE-LE À TA BASE", UDim2.fromOffset(190, 50), UDim2.fromOffset(245, 12), 12, Enum.Font.GothamBlack, COLORS.Green, Enum.TextXAlignment.Right)
+local carry = Instance.new("Frame")
+carry.AnchorPoint = Vector2.new(0.5, 1)
+carry.Position = UDim2.new(0.5, 0, 1, -20)
+carry.Size = UDim2.fromOffset(390, 68)
+carry.BackgroundColor3 = C.Dark
+carry.Visible = false
+carry.Parent = gui
+corner(carry, 12)
+local carryStroke = stroke(carry, C.Purple, 3, 0.05)
+
+local carryName = text(carry, "", UDim2.new(1, -20, 0, 30), UDim2.fromOffset(10, 7), 17, C.White, Enum.Font.GothamBlack, Enum.TextXAlignment.Center)
+local carryHint = text(carry, "RETURN TO YOUR BASE", UDim2.new(1, -20, 0, 22), UDim2.fromOffset(10, 38), 12, C.Green, Enum.Font.GothamBlack, Enum.TextXAlignment.Center)
 
 local toastHolder = Instance.new("Frame")
 toastHolder.AnchorPoint = Vector2.new(0.5, 0)
-toastHolder.Position = UDim2.new(0.5, 0, 0, 102)
-toastHolder.Size = UDim2.fromOffset(420, 150)
+toastHolder.Position = UDim2.new(0.5, 0, 0, 70)
+toastHolder.Size = UDim2.fromOffset(440, 160)
 toastHolder.BackgroundTransparency = 1
 toastHolder.Parent = gui
 
 local toastLayout = Instance.new("UIListLayout")
-toastLayout.Padding = UDim.new(0, 8)
+toastLayout.Padding = UDim.new(0, 7)
 toastLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 toastLayout.Parent = toastHolder
 
-local function showToast(message, kind)
-	local colors = {
-		Success = COLORS.Green,
-		Error = COLORS.Red,
-		Danger = COLORS.Red,
-		Info = COLORS.Purple,
-	}
-	local color = colors[kind] or COLORS.Purple
+local function toast(message, kind)
+	local color = C.Blue
+	if kind == "Success" then color = C.Green end
+	if kind == "Error" or kind == "Danger" then color = C.Red end
 
 	local box = Instance.new("TextLabel")
-	box.Size = UDim2.fromOffset(380, 44)
-	box.BackgroundColor3 = COLORS.Panel
-	box.BackgroundTransparency = 1
-	box.Text = message
-	box.TextColor3 = COLORS.Text
-	box.TextTransparency = 1
-	box.TextSize = 13
+	box.Size = UDim2.fromOffset(390, 42)
+	box.BackgroundColor3 = C.Dark
+	box.BackgroundTransparency = 0.04
+	box.Text = tostring(message)
+	box.TextColor3 = C.White
+	box.TextSize = 14
 	box.Font = Enum.Font.GothamBold
 	box.Parent = toastHolder
-	corner(box, 12)
-	stroke(box, color, 0.3, 1.3)
+	corner(box, 8)
+	stroke(box, color, 2, 0.1)
 
-	TweenService:Create(box, TweenInfo.new(0.18), {
-		BackgroundTransparency = 0.04,
-		TextTransparency = 0,
-	}):Play()
-
-	task.delay(3.2, function()
+	box.TextTransparency = 1
+	box.BackgroundTransparency = 1
+	TweenService:Create(box, TweenInfo.new(0.15), {TextTransparency = 0, BackgroundTransparency = 0.04}):Play()
+	task.delay(3, function()
 		if not box.Parent then return end
-		local tween = TweenService:Create(box, TweenInfo.new(0.18), {
-			BackgroundTransparency = 1,
-			TextTransparency = 1,
-		})
-		tween:Play()
-		tween.Completed:Wait()
+		local t = TweenService:Create(box, TweenInfo.new(0.16), {TextTransparency = 1, BackgroundTransparency = 1})
+		t:Play()
+		t.Completed:Wait()
 		box:Destroy()
 	end)
 end
 
-local overlay = Instance.new("Frame")
-overlay.Size = UDim2.fromScale(1, 1)
-overlay.BackgroundColor3 = Color3.new(0, 0, 0)
-overlay.BackgroundTransparency = 0.38
-overlay.Visible = false
-overlay.ZIndex = 40
-overlay.Parent = gui
+local shade = Instance.new("Frame")
+shade.Size = UDim2.fromScale(1,1)
+shade.BackgroundColor3 = Color3.new(0,0,0)
+shade.BackgroundTransparency = 0.45
+shade.Visible = false
+shade.ZIndex = 40
+shade.Parent = gui
 
-local function makeModal(titleText, width, height)
-	local frame = Instance.new("Frame")
-	frame.AnchorPoint = Vector2.new(0.5, 0.5)
-	frame.Position = UDim2.fromScale(0.5, 0.5)
-	frame.Size = UDim2.fromOffset(width, height)
-	frame.BackgroundColor3 = COLORS.Panel
-	frame.Visible = false
-	frame.ZIndex = 50
-	frame.Parent = gui
-	corner(frame, 22)
-	stroke(frame, COLORS.Purple, 0.2, 1.5)
+local function modal(titleText, width, height)
+	local f = Instance.new("Frame")
+	f.AnchorPoint = Vector2.new(0.5,0.5)
+	f.Position = UDim2.fromScale(0.5,0.5)
+	f.Size = UDim2.fromOffset(width,height)
+	f.BackgroundColor3 = Color3.fromRGB(245,247,252)
+	f.Visible = false
+	f.ZIndex = 50
+	f.Parent = gui
+	corner(f, 14)
+	stroke(f, Color3.fromRGB(45,49,61), 3, 0.1)
 
-	local title = label(frame, titleText, UDim2.new(1, -85, 0, 42), UDim2.fromOffset(24, 18), 22, Enum.Font.GothamBlack, COLORS.Text)
+	local title = text(f, titleText, UDim2.new(1,-70,0,44), UDim2.fromOffset(20,12), 22, Color3.fromRGB(35,38,48), Enum.Font.GothamBlack)
 	title.ZIndex = 51
 
-	local close = button(frame, "X", UDim2.fromOffset(42, 42), Color3.fromRGB(67, 38, 50), Color3.fromRGB(128, 54, 72))
-	close.Position = UDim2.new(1, -60, 0, 16)
+	local close = Instance.new("TextButton")
+	close.Size = UDim2.fromOffset(40,40)
+	close.Position = UDim2.new(1,-52,0,12)
+	close.BackgroundColor3 = C.Red
+	close.Text = "X"
+	close.TextColor3 = C.White
+	close.Font = Enum.Font.GothamBlack
+	close.TextSize = 18
 	close.ZIndex = 52
+	close.Parent = f
+	corner(close, 8)
 	close.MouseButton1Click:Connect(function()
-		frame.Visible = false
-		overlay.Visible = false
+		f.Visible = false
+		shade.Visible = false
 	end)
-
-	return frame
+	return f
 end
 
-local shopModal = makeModal("BOUTIQUE D'AMÉLIORATIONS", 560, 390)
+local shopModal = modal("UPGRADES", 540, 330)
+local indexModal = modal("PET INDEX", 520, 300)
 
-local shopSubtitle = label(shopModal, "Améliore ton économie et ta vitesse.", UDim2.new(1, -48, 0, 25), UDim2.fromOffset(24, 62), 13, Enum.Font.GothamMedium, COLORS.Muted)
-shopSubtitle.ZIndex = 51
-
-local baseCard = Instance.new("Frame")
-baseCard.Size = UDim2.new(1, -48, 0, 120)
-baseCard.Position = UDim2.fromOffset(24, 100)
-baseCard.BackgroundColor3 = COLORS.Panel2
-baseCard.ZIndex = 51
-baseCard.Parent = shopModal
-corner(baseCard, 16)
-stroke(baseCard, COLORS.Pink, 0.5)
-local baseTitle = label(baseCard, "BASE", UDim2.fromOffset(110, 28), UDim2.fromOffset(18, 14), 17, Enum.Font.GothamBlack, COLORS.Pink)
-baseTitle.ZIndex = 52
-local baseDesc = label(baseCard, "+25% revenus par niveau", UDim2.fromOffset(240, 24), UDim2.fromOffset(18, 48), 13, Enum.Font.GothamMedium, COLORS.Muted)
-baseDesc.ZIndex = 52
-local baseLevelLabel = label(baseCard, "Niveau 1", UDim2.fromOffset(150, 24), UDim2.fromOffset(18, 77), 13, Enum.Font.GothamBold, COLORS.Text)
-baseLevelLabel.ZIndex = 52
-local buyBase = button(baseCard, "$600", UDim2.fromOffset(155, 54), Color3.fromRGB(91, 51, 88), Color3.fromRGB(174, 79, 150))
-buyBase.Position = UDim2.new(1, -173, 0.5, -27)
-buyBase.ZIndex = 52
-
-local trainCard = Instance.new("Frame")
-trainCard.Size = UDim2.new(1, -48, 0, 120)
-trainCard.Position = UDim2.fromOffset(24, 238)
-trainCard.BackgroundColor3 = COLORS.Panel2
-trainCard.ZIndex = 51
-trainCard.Parent = shopModal
-corner(trainCard, 16)
-stroke(trainCard, COLORS.Cyan, 0.5)
-local trainTitle = label(trainCard, "TAPIS SPEED", UDim2.fromOffset(160, 28), UDim2.fromOffset(18, 14), 17, Enum.Font.GothamBlack, COLORS.Cyan)
-trainTitle.ZIndex = 52
-local trainDesc = label(trainCard, "Gagne plus de Speed à chaque tick", UDim2.fromOffset(270, 24), UDim2.fromOffset(18, 48), 13, Enum.Font.GothamMedium, COLORS.Muted)
-trainDesc.ZIndex = 52
-local trainLevelLabel = label(trainCard, "Niveau 1", UDim2.fromOffset(150, 24), UDim2.fromOffset(18, 77), 13, Enum.Font.GothamBold, COLORS.Text)
-trainLevelLabel.ZIndex = 52
-local buyTrain = button(trainCard, "$450", UDim2.fromOffset(155, 54), Color3.fromRGB(31, 82, 98), Color3.fromRGB(47, 145, 172))
-buyTrain.Position = UDim2.new(1, -173, 0.5, -27)
-buyTrain.ZIndex = 52
-
-local invModal = makeModal("INVENTAIRE", 520, 340)
-local invPetCount = label(invModal, "0 / 12 héros", UDim2.new(1, -48, 0, 34), UDim2.fromOffset(24, 78), 20, Enum.Font.GothamBlack, COLORS.Pink)
-invPetCount.ZIndex = 51
-local invIncome = label(invModal, "$0 / seconde", UDim2.new(1, -48, 0, 34), UDim2.fromOffset(24, 116), 18, Enum.Font.GothamBold, COLORS.Green)
-invIncome.ZIndex = 51
-local invInfo = label(invModal, "Les héros gagnent de l'argent automatiquement.\nLes autres joueurs peuvent les voler si tu ne surveilles pas ta base.", UDim2.new(1, -48, 0, 80), UDim2.fromOffset(24, 162), 14, Enum.Font.GothamMedium, COLORS.Muted)
-invInfo.TextWrapped = true
-invInfo.TextYAlignment = Enum.TextYAlignment.Top
-invInfo.ZIndex = 51
-
-local rarityText = label(invModal, "COMMON   RARE   EPIC   LEGENDARY   MYTHIC   SECRET", UDim2.new(1, -48, 0, 34), UDim2.fromOffset(24, 260), 11, Enum.Font.GothamBlack, COLORS.Text, Enum.TextXAlignment.Center)
-rarityText.ZIndex = 51
-
-local helpModal = makeModal("COMMENT JOUER", 580, 410)
-local instructions = {
-	"1. Va dans BLOSSOM VILLAGE et vole un oeuf.",
-	"2. Ramène l'oeuf dans la zone lumineuse de TA BASE.",
-	"3. Il devient un héros qui te rapporte de l'argent chaque seconde.",
-	"4. Marche sur ton TAPIS SPEED pour devenir plus rapide.",
-	"5. Débloque les zones rares grâce à ta Speed.",
-	"6. Tu peux voler les héros des autres joueurs et t'enfuir avec.",
-	"7. Améliore ta base et ton tapis pour progresser plus vite.",
-}
-for i, text in ipairs(instructions) do
-	local l = label(helpModal, text, UDim2.new(1, -48, 0, 36), UDim2.fromOffset(24, 70 + (i - 1) * 43), 14, Enum.Font.GothamMedium, i == 6 and COLORS.Pink or COLORS.Text)
-	l.TextWrapped = true
-	l.ZIndex = 51
+local function card(parent, y, titleText, desc, color)
+	local f = Instance.new("Frame")
+	f.Size = UDim2.new(1,-40,0,100)
+	f.Position = UDim2.fromOffset(20,y)
+	f.BackgroundColor3 = Color3.fromRGB(229,233,241)
+	f.ZIndex = 51
+	f.Parent = parent
+	corner(f, 10)
+	stroke(f, color, 2, 0.25)
+	local title = text(f,titleText,UDim2.fromOffset(170,28),UDim2.fromOffset(14,10),17,color,Enum.Font.GothamBlack)
+	title.ZIndex = 52
+	local d = text(f,desc,UDim2.fromOffset(270,24),UDim2.fromOffset(14,42),12,Color3.fromRGB(80,87,101),Enum.Font.GothamMedium)
+	d.ZIndex = 52
+	local level = text(f,"LV.1",UDim2.fromOffset(120,22),UDim2.fromOffset(14,68),12,Color3.fromRGB(45,49,60),Enum.Font.GothamBold)
+	level.ZIndex = 52
+	local buy = Instance.new("TextButton")
+	buy.Size = UDim2.fromOffset(140,52)
+	buy.Position = UDim2.new(1,-154,0.5,-26)
+	buy.BackgroundColor3 = color
+	buy.Text = "$?"
+	buy.TextColor3 = C.White
+	buy.Font = Enum.Font.GothamBlack
+	buy.TextSize = 17
+	buy.ZIndex = 52
+	buy.Parent = f
+	corner(buy, 8)
+	stroke(buy, Color3.fromRGB(40,40,40), 2, 0.25)
+	return level,buy
 end
 
-local function openModal(modal)
-	overlay.Visible = true
+local baseLevel, buyBase = card(shopModal,72,"BASE INCOME","+25% cash per level",C.Green)
+local trainLevel, buyTrain = card(shopModal,186,"TREADMILL","Gain Speed faster",C.Blue)
+
+local indexCount = text(indexModal,"0 / 12 HEROES",UDim2.new(1,-40,0,40),UDim2.fromOffset(20,74),24,C.Purple,Enum.Font.GothamBlack,Enum.TextXAlignment.Center)
+indexCount.ZIndex = 51
+local indexIncome = text(indexModal,"$0 / SECOND",UDim2.new(1,-40,0,35),UDim2.fromOffset(20,120),20,Color3.fromRGB(50,174,76),Enum.Font.GothamBlack,Enum.TextXAlignment.Center)
+indexIncome.ZIndex = 51
+local rarity = text(indexModal,"COMMON  •  RARE  •  EPIC  •  LEGENDARY  •  MYTHIC  •  SECRET",UDim2.new(1,-40,0,60),UDim2.fromOffset(20,185),12,Color3.fromRGB(76,83,99),Enum.Font.GothamBold,Enum.TextXAlignment.Center)
+rarity.TextWrapped = true
+rarity.ZIndex = 51
+
+local function open(which)
+	shade.Visible = true
 	shopModal.Visible = false
-	invModal.Visible = false
-	helpModal.Visible = false
-	modal.Visible = true
+	indexModal.Visible = false
+	which.Visible = true
 end
 
 local function refreshShop()
-	local ok, state = pcall(function()
-		return requestState:InvokeServer()
-	end)
+	local ok,state = pcall(function() return requestState:InvokeServer() end)
 	if not ok or not state then return end
-	baseLevelLabel.Text = "Niveau " .. tostring(player:GetAttribute("BaseLevel") or 1)
-	trainLevelLabel.Text = "Niveau " .. tostring(player:GetAttribute("TrainingLevel") or 1)
+	baseLevel.Text = "LV." .. tostring(player:GetAttribute("BaseLevel") or 1)
+	trainLevel.Text = "LV." .. tostring(player:GetAttribute("TrainingLevel") or 1)
 	buyBase.Text = "$" .. tostring(state.BaseUpgradeCost or "?")
 	buyTrain.Text = "$" .. tostring(state.TrainingUpgradeCost or "?")
 end
 
 shopButton.MouseButton1Click:Connect(function()
 	refreshShop()
-	openModal(shopModal)
+	open(shopModal)
 end)
 
-invButton.MouseButton1Click:Connect(function()
-	openModal(invModal)
-end)
-
-helpButton.MouseButton1Click:Connect(function()
-	openModal(helpModal)
+indexButton.MouseButton1Click:Connect(function()
+	open(indexModal)
 end)
 
 baseButton.MouseButton1Click:Connect(function()
-	local baseIndex = player:GetAttribute("BaseIndex")
-	if baseIndex then
-		showToast("Ta base est la BASE " .. tostring(baseIndex) .. ".", "Info")
-	else
-		showToast("Aucune base assignée.", "Error")
-	end
+	local n = player:GetAttribute("BaseIndex")
+	toast(n and ("YOUR BASE: " .. tostring(n)) or "No base assigned.", n and "Success" or "Error")
 end)
 
 buyBase.MouseButton1Click:Connect(function()
@@ -442,100 +331,87 @@ buyTrain.MouseButton1Click:Connect(function()
 	task.delay(0.25, refreshShop)
 end)
 
-overlay.InputBegan:Connect(function(input)
+shade.InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 then
-		overlay.Visible = false
+		shade.Visible = false
 		shopModal.Visible = false
-		invModal.Visible = false
-		helpModal.Visible = false
+		indexModal.Visible = false
 	end
 end)
 
 local stats = player:WaitForChild("leaderstats")
 local coins = stats:WaitForChild("Coins")
-local speed = stats:WaitForChild("Speed")
+local speedStat = stats:WaitForChild("Speed")
 
-local function getNextZone(speedValue)
-	local previousReq = 0
-	for _, zone in ipairs(Config.Zones) do
-		if speedValue < zone.RequiredSpeed then
-			return zone, previousReq
-		end
-		previousReq = zone.RequiredSpeed
+local function nextZone(value)
+	local prev = 0
+	for _,zone in ipairs(Config.Zones) do
+		if value < zone.RequiredSpeed then return zone,prev end
+		prev = zone.RequiredSpeed
 	end
-	return nil, previousReq
+	return nil,prev
 end
 
-local function refreshUI()
-	local income = player:GetAttribute("IncomePerSecond") or 0
-	local pets = player:GetAttribute("PetCount") or 0
-	local baseLevel = player:GetAttribute("BaseLevel") or 1
-	local trainLevel = player:GetAttribute("TrainingLevel") or 1
+local function refresh()
+	local incomeValue = player:GetAttribute("IncomePerSecond") or 0
+	local petCount = player:GetAttribute("PetCount") or 0
+	local baseLv = player:GetAttribute("BaseLevel") or 1
 
-	coinsLabel.Text = "$ " .. tostring(coins.Value)
-	incomeLabel.Text = "+$" .. tostring(income) .. "/s"
-	speedLabel.Text = "SPEED " .. tostring(speed.Value)
-	heroLabel.Text = "HEROES " .. tostring(pets) .. "/" .. tostring(Config.MaxPets)
+	money.Text = "$" .. tostring(coins.Value)
+	income.Text = "+$" .. tostring(incomeValue) .. "/s"
+	speed.Text = "SPEED " .. tostring(speedStat.Value)
+	heroesText.Text = "HEROES " .. tostring(petCount) .. "/" .. tostring(Config.MaxPets)
+	baseLevelText.Text = "BASE LV." .. tostring(baseLv)
+	indexCount.Text = tostring(petCount) .. " / " .. tostring(Config.MaxPets) .. " HEROES"
+	indexIncome.Text = "$" .. tostring(incomeValue) .. " / SECOND"
 
-	invPetCount.Text = tostring(pets) .. " / " .. tostring(Config.MaxPets) .. " héros"
-	invIncome.Text = "$" .. tostring(income) .. " / seconde"
-	baseLevelLabel.Text = "Niveau " .. tostring(baseLevel)
-	trainLevelLabel.Text = "Niveau " .. tostring(trainLevel)
-
-	local zone, previousReq = getNextZone(speed.Value)
+	local zone,prev = nextZone(speedStat.Value)
 	if zone then
-		nextZoneLabel.Text = zone.Name
-		reqLabel.Text = tostring(zone.RequiredSpeed) .. " Speed requis"
-		local span = math.max(1, zone.RequiredSpeed - previousReq)
-		local pct = math.clamp((speed.Value - previousReq) / span, 0, 1)
-		TweenService:Create(progressFill, TweenInfo.new(0.18), {Size = UDim2.new(pct, 0, 1, 0)}):Play()
-		hintLabel.Text = "Entraîne-toi sur ton tapis."
+		zoneText.Text = "NEXT: " .. string.upper(zone.Name) .. "   •   " .. tostring(zone.RequiredSpeed) .. " SPEED"
+		local pct = math.clamp((speedStat.Value-prev)/math.max(1,zone.RequiredSpeed-prev),0,1)
+		TweenService:Create(progressFill,TweenInfo.new(0.15),{Size=UDim2.new(pct,0,1,0)}):Play()
 	else
-		nextZoneLabel.Text = "TOUTES LES ZONES DÉBLOQUÉES"
-		reqLabel.Text = "Tu es au niveau maximum !"
-		progressFill.Size = UDim2.fromScale(1, 1)
-		hintLabel.Text = "Cherche les oeufs Secret."
+		zoneText.Text = "ALL ZONES UNLOCKED"
+		progressFill.Size = UDim2.fromScale(1,1)
 	end
 
-	local carrying = player:GetAttribute("CarryingEgg")
-	local rarity = player:GetAttribute("CarryingRarity")
-	if carrying and carrying ~= "" then
-		carryCard.Visible = true
-		carryName.Text = carrying .. "  [" .. tostring(rarity) .. "]"
-		local rarityInfo = Config.Rarities[rarity]
-		if rarityInfo then
-			carryName.TextColor3 = rarityInfo.Color
-			carryStroke.Color = rarityInfo.Color
+	local carried = player:GetAttribute("CarryingEgg")
+	local rarityName = player:GetAttribute("CarryingRarity")
+	if carried and carried ~= "" then
+		carry.Visible = true
+		carryName.Text = tostring(carried) .. "  [" .. tostring(rarityName) .. "]"
+		local data = Config.Rarities[rarityName]
+		if data then
+			carryName.TextColor3 = data.Color
+			carryStroke.Color = data.Color
 		end
 	else
-		carryCard.Visible = false
+		carry.Visible = false
 	end
 end
 
-coins.Changed:Connect(refreshUI)
-speed.Changed:Connect(refreshUI)
-for _, attr in ipairs({"IncomePerSecond", "PetCount", "BaseLevel", "TrainingLevel", "CarryingEgg", "CarryingRarity", "BaseIndex"}) do
-	player:GetAttributeChangedSignal(attr):Connect(refreshUI)
+coins.Changed:Connect(refresh)
+speedStat.Changed:Connect(refresh)
+for _,name in ipairs({"IncomePerSecond","PetCount","BaseLevel","TrainingLevel","CarryingEgg","CarryingRarity","BaseIndex"}) do
+	player:GetAttributeChangedSignal(name):Connect(refresh)
 end
 
-notifyRemote.OnClientEvent:Connect(function(message, kind)
-	showToast(tostring(message), tostring(kind or "Info"))
-	refreshUI()
-	refreshShop()
+notifyRemote.OnClientEvent:Connect(function(message,kind)
+	toast(message,kind)
+	refresh()
 end)
 
-UserInputService.InputBegan:Connect(function(input, processed)
+UserInputService.InputBegan:Connect(function(input,processed)
 	if processed then return end
 	if input.KeyCode == Enum.KeyCode.B then
 		refreshShop()
-		openModal(shopModal)
+		open(shopModal)
 	elseif input.KeyCode == Enum.KeyCode.I then
-		openModal(invModal)
+		open(indexModal)
 	end
 end)
 
-refreshUI()
-
-task.delay(1, function()
-	showToast("Vole un oeuf, ramène-le à ta base, puis défends tes héros.", "Info")
+refresh()
+task.delay(1.2,function()
+	toast("Steal an egg, escape the guardian, and bring it home.", "Success")
 end)
