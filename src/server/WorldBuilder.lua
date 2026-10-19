@@ -249,127 +249,102 @@ local function makeBase(parent, index, center, accent)
 	model.Name = "PlayerBase_" .. index
 	model.Parent = parent
 
-	local stone = Color3.fromRGB(66, 70, 78)
-	local stone2 = Color3.fromRGB(92, 97, 106)
-	local wall = Color3.fromRGB(232, 229, 220)
-	local dark = Color3.fromRGB(31, 34, 42)
+	local wood = Color3.fromRGB(142, 83, 44)
+	local woodDark = Color3.fromRGB(82, 55, 39)
+	local machineDark = Color3.fromRGB(38, 42, 50)
+	local grass = Color3.fromRGB(108, 215, 80)
 
-	-- Raised plinth + inset courtyard. This reads more like a real tycoon plot than a flat grass square.
-	part(model, "FoundationShadow", Vector3.new(58, 1.2, 48), CFrame.new(center - Vector3.new(0, 1.1, 0)), Color3.fromRGB(48, 51, 58), Enum.Material.Slate)
-	part(model, "Foundation", Vector3.new(56, 1.2, 46), CFrame.new(center - Vector3.new(0, 0.35, 0)), stone2, Enum.Material.Concrete)
-	local floor = part(model, "Floor", Vector3.new(52, 0.45, 42), CFrame.new(center + Vector3.new(0, 0.5, 0)), Color3.fromRGB(104, 166, 95), Enum.Material.Grass)
+	-- Bright fenced tycoon plot, closer to modern simulator composition.
+	local floor = part(model, "Floor", Vector3.new(58, 0.8, 50), CFrame.new(center), grass, Enum.Material.Grass)
 	floor.TopSurface = Enum.SurfaceType.Smooth
+	part(model, "PlotBase", Vector3.new(60, 0.7, 52), CFrame.new(center - Vector3.new(0,0.75,0)), Color3.fromRGB(94, 99, 102), Enum.Material.Concrete)
 
-	-- Courtyard path from entrance to hero display.
-	part(model, "CourtyardPath", Vector3.new(12, 0.18, 38), CFrame.new(center + Vector3.new(0, 0.82, -1)), Color3.fromRGB(194, 189, 176), Enum.Material.Concrete)
-	for z = -16, 14, 6 do
-		part(model, "PathInset", Vector3.new(8.5, 0.08, 3.7), CFrame.new(center + Vector3.new(0, 0.94, z)), Color3.fromRGB(217, 213, 201), Enum.Material.SmoothPlastic)
+	-- Full wooden perimeter with a wide front entrance.
+	lowFence(model, center + Vector3.new(-29, 0, 0), 50, false, wood)
+	lowFence(model, center + Vector3.new(29, 0, 0), 50, false, wood)
+	lowFence(model, center + Vector3.new(0, 0, 25), 58, true, wood)
+	lowFence(model, center + Vector3.new(-21, 0, -25), 16, true, wood)
+	lowFence(model, center + Vector3.new(21, 0, -25), 16, true, wood)
+
+	-- Entrance posts + player sign.
+	for _,x in ipairs({-11,11}) do
+		part(model,"EntrancePost",Vector3.new(2.4,8,2.4),CFrame.new(center+Vector3.new(x,4,-25)),woodDark,Enum.Material.Wood)
+		part(model,"EntranceCap",Vector3.new(3.2,0.8,3.2),CFrame.new(center+Vector3.new(x,8.4,-25)),accent,Enum.Material.Neon,0.18)
+	end
+	local sign = part(model, "BaseSign", Vector3.new(18, 4.4, 0.7), CFrame.new(center + Vector3.new(0, 7, -25)), Color3.fromRGB(248, 245, 234), Enum.Material.SmoothPlastic)
+	local signLabel = surfaceLabel(sign, Enum.NormalId.Front, "BASE LIBRE", Color3.fromRGB(35,38,44), Color3.fromRGB(248,245,234))
+	part(model,"SignAccent",Vector3.new(15,0.35,0.25),CFrame.new(center+Vector3.new(0,5.2,-25.45)),accent,Enum.Material.Neon,0.18)
+
+	-- Back collection machine: recognizable simulator silhouette with screen and antennae.
+	local machine = Instance.new("Model")
+	machine.Name = "BaseMachine"
+	machine.Parent = model
+	part(machine,"MachineBody",Vector3.new(22,12,8),CFrame.new(center+Vector3.new(0,6.4,19)),machineDark,Enum.Material.Metal)
+	part(machine,"MachineTop",Vector3.new(24,2,10),CFrame.new(center+Vector3.new(0,13.4,19)),Color3.fromRGB(64,69,78),Enum.Material.Metal)
+	part(machine,"MachineScreen",Vector3.new(10,6,0.45),CFrame.new(center+Vector3.new(0,7,14.8)),Color3.fromRGB(87,194,255),Enum.Material.Glass,0.12)
+	part(machine,"MachineScreenGlow",Vector3.new(7,0.4,0.15),CFrame.new(center+Vector3.new(0,4.8,14.5)),accent,Enum.Material.Neon,0.12)
+	for _,x in ipairs({-7,7}) do
+		part(machine,"Antenna",Vector3.new(0.8,8,0.8),CFrame.new(center+Vector3.new(x,18,19)),woodDark,Enum.Material.Metal)
+		ball(machine,"AntennaLamp",2.2,center+Vector3.new(x,22.2,19),accent,Enum.Material.Neon,0.1)
 	end
 
-	-- Back building / HQ.
-	part(model, "HQBody", Vector3.new(50, 10, 10), CFrame.new(center + Vector3.new(0, 5.7, 16)), wall, Enum.Material.Concrete)
-	part(model, "HQInset", Vector3.new(44, 7.2, 0.8), CFrame.new(center + Vector3.new(0, 5.8, 10.8)), dark, Enum.Material.SmoothPlastic)
-	part(model, "HQRoof", Vector3.new(56, 1.4, 14), CFrame.new(center + Vector3.new(0, 11.1, 16)), stone, Enum.Material.Metal)
-	part(model, "HQAccent", Vector3.new(42, 0.35, 1), CFrame.new(center + Vector3.new(0, 9.5, 10.35)), accent, Enum.Material.Neon, 0.16)
-	for _, x in ipairs({-19, 19}) do
-		part(model, "HQColumn", Vector3.new(2.2, 9, 2.2), CFrame.new(center + Vector3.new(x, 5, 10.5)), stone, Enum.Material.Metal)
+	-- Deposit pad directly in front of the machine.
+	cylinder(model, "DepositBase", 13, 0.8, CFrame.new(center + Vector3.new(0,1,-10)), Color3.fromRGB(62,66,74), Enum.Material.Metal)
+	local deposit = cylinder(model, "Deposit", 10, 0.28, CFrame.new(center + Vector3.new(0,1.55,-10)), accent, Enum.Material.Neon, 0.18)
+	floatingLabel(deposit, "DEPOT", Color3.new(1,1,1), 72, 20, Vector3.new(0,1.5,0), 32)
+
+	-- Speed station.
+	part(model,"SpeedMachine",Vector3.new(12,7,7),CFrame.new(center+Vector3.new(-20,3.8,-3)),machineDark,Enum.Material.Metal)
+	part(model,"SpeedScreen",Vector3.new(8,3.6,0.35),CFrame.new(center+Vector3.new(-20,4.2,-6.6)),Color3.fromRGB(66,194,255),Enum.Material.Glass,0.14)
+	local training = part(model,"TrainingPad",Vector3.new(14,0.35,8),CFrame.new(center+Vector3.new(-20,1,-12)),Color3.fromRGB(69,190,238),Enum.Material.Glass,0.18)
+	for z=-3,3,1.5 do
+		part(model,"SpeedStripe",Vector3.new(11,0.07,0.25),CFrame.new(center+Vector3.new(-20,1.3,-12+z)),Color3.fromRGB(220,248,255),Enum.Material.Neon,0.3)
 	end
 
-	local sign = part(model, "BaseSign", Vector3.new(21, 4.6, 0.65), CFrame.new(center + Vector3.new(0, 6.7, 10.25)), Color3.fromRGB(245, 246, 248), Enum.Material.SmoothPlastic)
-	local signLabel = surfaceLabel(sign, Enum.NormalId.Front, "BASE LIBRE", accent, Color3.fromRGB(245, 246, 248))
-
-	-- Entrance pylons make the plot silhouette cleaner.
-	for _, x in ipairs({-22, 22}) do
-		part(model, "EntrancePylon", Vector3.new(3, 8, 3), CFrame.new(center + Vector3.new(x, 4.5, -21)), stone, Enum.Material.Metal)
-		part(model, "EntranceLight", Vector3.new(2.1, 0.35, 2.1), CFrame.new(center + Vector3.new(x, 8.65, -21)), accent, Enum.Material.Neon, 0.12)
+	-- Upgrade terminals.
+	local function terminal(name, pos, color, actionText, objectText)
+		local body=part(model,name,Vector3.new(5,6,5),CFrame.new(center+pos),machineDark,Enum.Material.Metal)
+		part(model,name.."Screen",Vector3.new(3.4,2.6,0.35),body.CFrame*CFrame.new(0,0.5,-2.65),color,Enum.Material.Glass,0.14)
+		part(model,name.."Light",Vector3.new(3.8,0.25,3.8),body.CFrame*CFrame.new(0,3.1,0),color,Enum.Material.Neon,0.18)
+		return body,prompt(body,actionText,objectText)
 	end
-	part(model, "EntranceBeam", Vector3.new(47, 2, 2.5), CFrame.new(center + Vector3.new(0, 8.7, -21)), stone, Enum.Material.Metal)
-	part(model, "EntranceAccent", Vector3.new(39, 0.28, 0.45), CFrame.new(center + Vector3.new(0, 8.7, -22.3)), accent, Enum.Material.Neon, 0.15)
+	local baseTerminal, basePrompt = terminal("BaseTerminal",Vector3.new(20,3.2,-8),accent,"AMELIORER","Base")
+	local trainTerminal, trainingPrompt = terminal("TrainTerminal",Vector3.new(20,3.2,0),Color3.fromRGB(65,194,255),"AMELIORER","Speed")
+	local shieldTerminal, shieldPrompt = terminal("ShieldTerminal",Vector3.new(20,3.2,8),Color3.fromRGB(82,225,242),"ACTIVER","Bouclier")
 
-	-- Low perimeter walls, open at the entrance.
-	for _, x in ipairs({-27, 27}) do
-		part(model, "SideWall", Vector3.new(1.4, 4.2, 46), CFrame.new(center + Vector3.new(x, 2.4, 0)), Color3.fromRGB(137, 122, 101), Enum.Material.Brick)
-		part(model, "SideWallCap", Vector3.new(2, 0.7, 47), CFrame.new(center + Vector3.new(x, 4.7, 0)), Color3.fromRGB(207, 196, 178), Enum.Material.Concrete)
-	end
-	for _, x in ipairs({-19, 19}) do
-		part(model, "FrontWall", Vector3.new(14, 4.2, 1.4), CFrame.new(center + Vector3.new(x, 2.4, -23)), Color3.fromRGB(137, 122, 101), Enum.Material.Brick)
-		part(model, "FrontWallCap", Vector3.new(15, 0.7, 2), CFrame.new(center + Vector3.new(x, 4.7, -23)), Color3.fromRGB(207, 196, 178), Enum.Material.Concrete)
-	end
-
-	-- Deposit is a recessed circular dais, not a glowing rectangle.
-	cylinder(model, "DepositDais", 12, 0.7, CFrame.new(center + Vector3.new(0, 1.15, -13)), stone, Enum.Material.Concrete)
-	local deposit = cylinder(model, "Deposit", 9, 0.3, CFrame.new(center + Vector3.new(0, 1.7, -13)), accent, Enum.Material.Neon, 0.18)
-	floatingLabel(deposit, "DEPOT", Color3.new(1,1,1), 74, 20, Vector3.new(0, 1.45, 0), 30)
-
-	-- Modern treadmill bay.
-	local trainingBay = part(model, "TrainingBay", Vector3.new(14, 0.5, 10), CFrame.new(center + Vector3.new(-17, 1.05, -5)), Color3.fromRGB(48, 53, 63), Enum.Material.Metal)
-	local training = part(model, "TrainingPad", Vector3.new(11, 0.24, 7), CFrame.new(center + Vector3.new(-17, 1.48, -5)), Color3.fromRGB(65, 183, 235), Enum.Material.Glass, 0.2)
-	for z = -2.5, 2.5, 1.25 do
-		part(model, "TreadLine", Vector3.new(9, 0.08, 0.18), CFrame.new(center + Vector3.new(-17, 1.64, -5 + z)), Color3.fromRGB(192, 236, 255), Enum.Material.Neon, 0.35)
-	end
-
-	-- Three compact terminals on matching pedestals.
-	local function terminal(name, offset, terminalAccent, actionText, objectText)
-		cylinder(model, name .. "Pedestal", 6.8, 0.7, CFrame.new(center + offset + Vector3.new(0, 0.9, 0)), stone, Enum.Material.Concrete)
-		local body = part(model, name, Vector3.new(4.2, 5.2, 4.2), CFrame.new(center + offset + Vector3.new(0, 3.2, 0)), Color3.fromRGB(43, 47, 56), Enum.Material.Metal)
-		part(model, name .. "Face", Vector3.new(3.2, 2.2, 0.3), body.CFrame * CFrame.new(0, 0.25, -2.15), terminalAccent, Enum.Material.Glass, 0.15)
-		part(model, name .. "Glow", Vector3.new(3.4, 0.18, 3.4), body.CFrame * CFrame.new(0, 2.7, 0), terminalAccent, Enum.Material.Neon, 0.18)
-		return body, prompt(body, actionText, objectText)
-	end
-
-	local baseTerminal, basePrompt = terminal("BaseTerminal", Vector3.new(17,0,-7), accent, "AMELIORER", "Base")
-	local trainTerminal, trainingPrompt = terminal("TrainTerminal", Vector3.new(17,0,1), Color3.fromRGB(67,198,255), "AMELIORER", "Speed")
-	local shieldTerminal, shieldPrompt = terminal("ShieldTerminal", Vector3.new(-17,0,7), Color3.fromRGB(94,226,255), "ACTIVER", "Bouclier")
-
-	-- Hero gallery: two raised terraces at the back instead of 12 loose circles across the lawn.
-	local heroFolder = Instance.new("Folder")
-	heroFolder.Name = "Heroes"
-	heroFolder.Parent = model
-
-	part(model, "GalleryDeck", Vector3.new(38, 0.7, 13), CFrame.new(center + Vector3.new(0, 1, 7)), Color3.fromRGB(84, 88, 96), Enum.Material.Concrete)
-	part(model, "GalleryInset", Vector3.new(35, 0.18, 10), CFrame.new(center + Vector3.new(0, 1.48, 7)), Color3.fromRGB(45, 49, 57), Enum.Material.SmoothPlastic)
-
-	local standPositions = {}
-	for row = 0, 2 do
-		for col = 0, 3 do
-			local x = -12 + col * 8
-			local z = 3.2 + row * 3.6
-			local stand = cylinder(model, "HeroStand", 5.3, 0.75, CFrame.new(center + Vector3.new(x, 1.75, z)), Color3.fromRGB(185, 186, 184), Enum.Material.Metal)
-			part(model, "HeroStandAccent", Vector3.new(4.1, 0.13, 4.1), CFrame.new(stand.Position + Vector3.new(0, 0.48, 0)), accent, Enum.Material.Neon, 0.35)
-			table.insert(standPositions, CFrame.new(center + Vector3.new(x, 4, z)))
-		end
-	end
-
-	-- Small landscaping so bases feel integrated into the hub.
-	for _, x in ipairs({-22, 22}) do
-		local planter = cylinder(model, "Planter", 6.5, 1.2, CFrame.new(center + Vector3.new(x, 1.2, 15)), Color3.fromRGB(93, 95, 91), Enum.Material.Concrete)
-		ball(model, "PlanterBush", 5.4, planter.Position + Vector3.new(0, 2.2, 0), Color3.fromRGB(71, 132, 72), Enum.Material.Grass)
-	end
-
-	local shieldWalls = {
-		part(model, "ShieldFront", Vector3.new(54, 13, 0.6), CFrame.new(center + Vector3.new(0, 6.5, -23)), Color3.fromRGB(83,220,255), Enum.Material.ForceField, 1),
-		part(model, "ShieldBack", Vector3.new(54, 13, 0.6), CFrame.new(center + Vector3.new(0, 6.5, 23)), Color3.fromRGB(83,220,255), Enum.Material.ForceField, 1),
-		part(model, "ShieldLeft", Vector3.new(0.6, 13, 46), CFrame.new(center + Vector3.new(-27, 6.5, 0)), Color3.fromRGB(83,220,255), Enum.Material.ForceField, 1),
-		part(model, "ShieldRight", Vector3.new(0.6, 13, 46), CFrame.new(center + Vector3.new(27, 6.5, 0)), Color3.fromRGB(83,220,255), Enum.Material.ForceField, 1),
+	-- 12 hero stands arranged like showroom slots along the sides/back.
+	local heroFolder=Instance.new("Folder")
+	heroFolder.Name="Heroes"
+	heroFolder.Parent=model
+	local standPositions={}
+	local standCoords={
+		{-20,8},{-12,8},{-4,8},{4,8},{12,8},{20,8},
+		{-20,15},{-12,15},{-4,15},{4,15},{12,15},{20,15},
 	}
-	for _, wallPart in ipairs(shieldWalls) do
-		wallPart.CanCollide = false
+	for _,coord in ipairs(standCoords) do
+		local x,z=coord[1],coord[2]
+		cylinder(model,"HeroStand",5.4,0.75,CFrame.new(center+Vector3.new(x,1.15,z)),Color3.fromRGB(220,216,203),Enum.Material.Concrete)
+		cylinder(model,"HeroStandRing",4.2,0.18,CFrame.new(center+Vector3.new(x,1.62,z)),accent,Enum.Material.Neon,0.35)
+		table.insert(standPositions,CFrame.new(center+Vector3.new(x,4.2,z)))
 	end
+
+	-- Small decorative crates/planters so the base does not feel empty.
+	for _,p in ipairs({Vector3.new(-24,1,20),Vector3.new(24,1,20)}) do
+		part(model,"Crate",Vector3.new(5,5,5),CFrame.new(center+p+Vector3.new(0,2.5,0)),Color3.fromRGB(154,102,58),Enum.Material.WoodPlanks)
+	end
+
+	local shieldWalls={
+		part(model,"ShieldFront",Vector3.new(58,13,0.6),CFrame.new(center+Vector3.new(0,6.5,-25)),Color3.fromRGB(83,220,255),Enum.Material.ForceField,1),
+		part(model,"ShieldBack",Vector3.new(58,13,0.6),CFrame.new(center+Vector3.new(0,6.5,25)),Color3.fromRGB(83,220,255),Enum.Material.ForceField,1),
+		part(model,"ShieldLeft",Vector3.new(0.6,13,50),CFrame.new(center+Vector3.new(-29,6.5,0)),Color3.fromRGB(83,220,255),Enum.Material.ForceField,1),
+		part(model,"ShieldRight",Vector3.new(0.6,13,50),CFrame.new(center+Vector3.new(29,6.5,0)),Color3.fromRGB(83,220,255),Enum.Material.ForceField,1),
+	}
+	for _,wallPart in ipairs(shieldWalls) do wallPart.CanCollide=false end
 
 	return {
-		Index = index,
-		Model = model,
-		Position = center,
-		Accent = accent,
-		SignLabel = signLabel,
-		Deposit = deposit,
-		TrainingPad = training,
-		BasePrompt = basePrompt,
-		TrainingPrompt = trainingPrompt,
-		ShieldPrompt = shieldPrompt,
-		ShieldWalls = shieldWalls,
-		HeroFolder = heroFolder,
-		StandPositions = standPositions,
+		Index=index,Model=model,Position=center,Accent=accent,SignLabel=signLabel,
+		Deposit=deposit,TrainingPad=training,BasePrompt=basePrompt,TrainingPrompt=trainingPrompt,
+		ShieldPrompt=shieldPrompt,ShieldWalls=shieldWalls,HeroFolder=heroFolder,StandPositions=standPositions,
 	}
 end
 
@@ -413,37 +388,72 @@ local function basicHouse(parent, pos, accent, scale)
 end
 
 local function ninjaWorld(parent, world)
-	local z = world.CenterZ
-	for _, info in ipairs({
-		{Vector3.new(-88, 1, z - 70), 1.0},
-		{Vector3.new(-52, 1, z - 28), 0.9},
-		{Vector3.new(-92, 1, z + 38), 1.05},
-		{Vector3.new(55, 1, z - 66), 0.95},
-		{Vector3.new(94, 1, z - 15), 1.0},
-		{Vector3.new(58, 1, z + 55), 1.05},
-	}) do
-		basicHouse(parent, info[1], world.Accent, info[2])
-	end
-	for _, p in ipairs({
-		Vector3.new(-130,1,z-85),Vector3.new(130,1,z-80),Vector3.new(-125,1,z+15),
-		Vector3.new(126,1,z+20),Vector3.new(-120,1,z+90),Vector3.new(118,1,z+95),
-	}) do
-		tree(parent, p, Color3.fromRGB(255, 145, 203), 1)
+	local z=world.CenterZ
+	local wood=Color3.fromRGB(145,84,45)
+	local sand=Color3.fromRGB(207,191,154)
+
+	-- Central village lane and two fenced activity pens.
+	part(parent,"NinjaLane",Vector3.new(42,0.35,218),CFrame.new(0,1.35,z),sand,Enum.Material.Concrete)
+	for _,x in ipairs({-24,24}) do
+		part(parent,"NinjaLaneEdge",Vector3.new(1.2,0.2,218),CFrame.new(x,1.55,z),Color3.fromRGB(133,126,112),Enum.Material.Concrete)
 	end
 
-	-- Training yard.
-	local yard = part(parent, "TrainingYard", Vector3.new(62, 0.7, 50), CFrame.new(-78, 1.1, z + 82), Color3.fromRGB(151, 112, 71), Enum.Material.Ground)
-	lowFence(parent, Vector3.new(-78,1,z+57), 62, true)
-	lowFence(parent, Vector3.new(-78,1,z+107), 62, true)
-	for _, x in ipairs({-15, 0, 15}) do
-		part(parent, "TrainingPost", Vector3.new(3, 11, 3), CFrame.new(-78 + x, 6, z + 82), Color3.fromRGB(102, 69, 47), Enum.Material.Wood)
+	lowFence(parent,Vector3.new(-92,1,z-20),110,false,wood)
+	lowFence(parent,Vector3.new(-132,1,z-75),80,true,wood)
+	lowFence(parent,Vector3.new(-132,1,z+35),80,true,wood)
+	lowFence(parent,Vector3.new(92,1,z-20),110,false,wood)
+	lowFence(parent,Vector3.new(132,1,z-75),80,true,wood)
+	lowFence(parent,Vector3.new(132,1,z+35),80,true,wood)
+
+	-- Dense village silhouettes.
+	for _,info in ipairs({
+		{-118,-62,1.2},{-82,-68,0.95},{-118,-8,1.0},{-78,18,1.15},{-120,62,0.9},
+		{118,-58,1.15},{82,-70,0.95},{118,-4,1.0},{82,26,1.1},{120,66,0.95},
+	}) do
+		basicHouse(parent,Vector3.new(info[1],1,z+info[2]),world.Accent,info[3])
 	end
 
-	-- Hokage-like tower.
-	for level = 1, 4 do
-		local d = 34 - (level - 1) * 4
-		cylinder(parent, "VillageTower", d, 8, CFrame.new(82, 6 + (level - 1) * 8, z + 72), Color3.fromRGB(223, 203, 172), Enum.Material.Brick)
-		cylinder(parent, "VillageTowerRoof", d + 7, 2, CFrame.new(82, 11 + (level - 1) * 8, z + 72), Color3.fromRGB(184, 58, 50), Enum.Material.Slate)
+	-- Sakura rows frame the lane.
+	for dz=-90,90,36 do
+		tree(parent,Vector3.new(-42,1,z+dz),Color3.fromRGB(242,139,191),0.78)
+		tree(parent,Vector3.new(42,1,z+dz),Color3.fromRGB(242,139,191),0.78)
+	end
+
+	-- Ramen kiosk.
+	local ramen=Instance.new("Model")
+	ramen.Name="RamenShop"
+	ramen.Parent=parent
+	part(ramen,"Body",Vector3.new(24,11,16),CFrame.new(-104,6,z+82),Color3.fromRGB(230,197,145),Enum.Material.WoodPlanks)
+	part(ramen,"Roof",Vector3.new(29,2,21),CFrame.new(-104,12.5,z+82),Color3.fromRGB(53,57,64),Enum.Material.Slate)
+	local ramenSign=part(ramen,"Sign",Vector3.new(14,4,0.6),CFrame.new(-104,9,z+73.6),Color3.fromRGB(195,55,47),Enum.Material.SmoothPlastic)
+	surfaceLabel(ramenSign,Enum.NormalId.Front,"RAMEN",Color3.fromRGB(255,236,185),Color3.fromRGB(195,55,47))
+
+	-- Training pen with targets.
+	local yard=part(parent,"TrainingYard",Vector3.new(72,0.55,58),CFrame.new(102,1.2,z+70),Color3.fromRGB(148,108,68),Enum.Material.Ground)
+	lowFence(parent,Vector3.new(102,1,z+41),72,true,wood)
+	lowFence(parent,Vector3.new(102,1,z+99),72,true,wood)
+	for _,x in ipairs({82,102,122}) do
+		part(parent,"TrainingPost",Vector3.new(3,12,3),CFrame.new(x,6,z+70),Color3.fromRGB(104,70,48),Enum.Material.Wood)
+		cylinder(parent,"Target",8,0.8,CFrame.new(x,8,z+54),Color3.fromRGB(238,229,210),Enum.Material.Wood)
+	end
+
+	-- Big ninja landmark at the back gives the same "giant thing in the zone" readability as popular simulator maps.
+	local landmark=Instance.new("Model")
+	landmark.Name="NinjaLandmark"
+	landmark.Parent=parent
+	part(landmark,"LegL",Vector3.new(7,22,7),CFrame.new(-12,12,z+94),Color3.fromRGB(51,55,63),Enum.Material.SmoothPlastic)
+	part(landmark,"LegR",Vector3.new(7,22,7),CFrame.new(12,12,z+94),Color3.fromRGB(51,55,63),Enum.Material.SmoothPlastic)
+	part(landmark,"Torso",Vector3.new(31,28,13),CFrame.new(0,36,z+94),Color3.fromRGB(228,111,47),Enum.Material.SmoothPlastic)
+	ball(landmark,"Head",18,Vector3.new(0,60,z+94),Color3.fromRGB(238,193,157),Enum.Material.SmoothPlastic)
+	ball(landmark,"Hair",20,Vector3.new(0,68,z+94),Color3.fromRGB(238,197,64),Enum.Material.SmoothPlastic)
+	part(landmark,"Headband",Vector3.new(20,4,19),CFrame.new(0,63,z+94),Color3.fromRGB(55,82,109),Enum.Material.Metal)
+	addHighlight(landmark,world.Accent)
+
+	-- Hokage-style stacked tower in opposite corner.
+	for level=1,4 do
+		local d=36-(level-1)*4
+		cylinder(parent,"VillageTower",d,8,CFrame.new(-105,6+(level-1)*8,z+104),Color3.fromRGB(224,203,169),Enum.Material.Brick)
+		cylinder(parent,"VillageTowerRoof",d+8,2,CFrame.new(-105,11+(level-1)*8,z+104),Color3.fromRGB(181,55,48),Enum.Material.Slate)
 	end
 end
 
@@ -602,17 +612,19 @@ local WORLD_BUILDERS = {
 }
 
 local function decorateBoundary(world, minZ, maxZ)
-	local wallColor = Color3.fromRGB(88, 77, 67)
-	part(world, "WestBoundary", Vector3.new(18, 68, maxZ - minZ), CFrame.new(-170, 31, (minZ + maxZ) / 2), wallColor, Enum.Material.Rock)
-	part(world, "EastBoundary", Vector3.new(18, 68, maxZ - minZ), CFrame.new(170, 31, (minZ + maxZ) / 2), wallColor, Enum.Material.Rock)
-	part(world, "SouthBoundary", Vector3.new(340, 68, 18), CFrame.new(0, 31, minZ), wallColor, Enum.Material.Rock)
-	part(world, "NorthBoundary", Vector3.new(340, 68, 18), CFrame.new(0, 31, maxZ), wallColor, Enum.Material.Rock)
-
-	for z = minZ + 30, maxZ - 30, 80 do
-		for _, x in ipairs({-157, 157}) do
-			rock(world, Vector3.new(x, 42 + (math.abs(z) % 3) * 4, z), Vector3.new(30, 35, 34), Color3.fromRGB(98, 86, 75))
-			tree(world, Vector3.new(x > 0 and 145 or -145, 1, z + 18), Color3.fromRGB(64, 123, 69), 1.1)
+	-- Layered irregular cliff line instead of four giant flat walls.
+	for z = minZ, maxZ, 52 do
+		for _,side in ipairs({-1,1}) do
+			local x = side * 164
+			local h = 34 + ((math.floor((z-minZ)/52) % 4) * 7)
+			rock(world, Vector3.new(x, h/2-1, z), Vector3.new(26, h, 38), Color3.fromRGB(91,82,74))
+			rock(world, Vector3.new(x-side*13, h*0.42, z+14), Vector3.new(24,h*0.72,30), Color3.fromRGB(105,94,82))
+			tree(world, Vector3.new(x-side*24,1,z-8), Color3.fromRGB(57,117,67), 1.0)
 		end
+	end
+	for x=-155,155,42 do
+		rock(world,Vector3.new(x,23,minZ),Vector3.new(42,46,24),Color3.fromRGB(92,83,75))
+		rock(world,Vector3.new(x,23,maxZ),Vector3.new(42,46,24),Color3.fromRGB(92,83,75))
 	end
 end
 
@@ -675,9 +687,9 @@ local function decorateHub(parent)
 end
 
 local function configureLighting()
-	Lighting.ClockTime = 14.2
-	Lighting.Brightness = 2.4
-	Lighting.ExposureCompensation = 0.05
+	Lighting.ClockTime = 13.2
+	Lighting.Brightness = 2.8
+	Lighting.ExposureCompensation = 0.02
 	Lighting.Ambient = Color3.fromRGB(118, 124, 138)
 	Lighting.OutdoorAmbient = Color3.fromRGB(172, 178, 190)
 	Lighting.EnvironmentDiffuseScale = 0.55
@@ -697,8 +709,8 @@ local function configureLighting()
 
 	local color = Instance.new("ColorCorrectionEffect")
 	color.Name = "AnimeColor"
-	color.Saturation = 0.06
-	color.Contrast = 0.08
+	color.Saturation = 0.12
+	color.Contrast = 0.06
 	color.Brightness = -0.01
 	color.Parent = Lighting
 
@@ -738,33 +750,49 @@ function WorldBuilder.Build(Config)
 	local maxZ = 1995
 	decorateBoundary(world, minZ, maxZ)
 
-	-- Hub foundation and plaza. Premium, low-neon, landscaped composition.
-	local hubFloor = part(world, "HubFloor", Vector3.new(320, 4, 290), CFrame.new(0, -1, -185), Color3.fromRGB(88, 161, 82), Enum.Material.Grass)
-	hubFloor.TopSurface = Enum.SurfaceType.Smooth
-	local hubRoad = part(world, "HubRoad", Vector3.new(44, 0.55, 300), CFrame.new(0, 1.3, -180), Color3.fromRGB(201, 194, 178), Enum.Material.Concrete)
-	hubRoad.TopSurface = Enum.SurfaceType.Smooth
+	-- Hub inspired by modern simulator flow: bright lawn, fenced plots, central steal lane.
+	local hubFloor=part(world,"HubFloor",Vector3.new(320,4,290),CFrame.new(0,-1,-185),Color3.fromRGB(101,205,78),Enum.Material.Grass)
+	hubFloor.TopSurface=Enum.SurfaceType.Smooth
+	local hubRoad=part(world,"HubRoad",Vector3.new(46,0.55,300),CFrame.new(0,1.2,-180),Color3.fromRGB(210,196,165),Enum.Material.Concrete)
+	hubRoad.TopSurface=Enum.SurfaceType.Smooth
 
-	-- Layered plaza with a real focal monument instead of a giant glowing sphere.
-	cylinder(world, "CentralPlazaOuter", 118, 1.3, CFrame.new(0, 1.0, -235), Color3.fromRGB(112, 116, 123), Enum.Material.Concrete)
-	cylinder(world, "CentralPlaza", 106, 1.45, CFrame.new(0, 1.45, -235), Color3.fromRGB(194, 196, 198), Enum.Material.Concrete)
-	cylinder(world, "CentralPlazaInset", 86, 0.22, CFrame.new(0, 2.25, -235), Color3.fromRGB(218, 216, 208), Enum.Material.SmoothPlastic)
-	makeHubMonument(world, Vector3.new(0, 2.25, -235))
-	decorateHub(world)
-
-	makeKiosk(world, Vector3.new(-72, 1, -252), "SHOP", Color3.fromRGB(72, 216, 98))
-	makeKiosk(world, Vector3.new(72, 1, -252), "INDEX", Color3.fromRGB(70, 167, 245))
-
-	-- Softer warm lamps: fewer fixtures, less bloom.
-	for z = -315, -55, 38 do
-		streetLamp(world, Vector3.new(-27, 1, z), Color3.fromRGB(255, 214, 154))
-		streetLamp(world, Vector3.new(27, 1, z), Color3.fromRGB(255, 214, 154))
+	-- Wood fences define the lane like a polished steal/simulator map.
+	for _,x in ipairs({-27,27}) do
+		lowFence(world,Vector3.new(x,1,-178),276,false,Color3.fromRGB(148,86,46))
 	end
 
-	for _, p in ipairs({
-		Vector3.new(-148,1,-302),Vector3.new(148,1,-302),Vector3.new(-148,1,-235),Vector3.new(148,1,-235),
-		Vector3.new(-148,1,-165),Vector3.new(148,1,-165),Vector3.new(-148,1,-88),Vector3.new(148,1,-88),
+	-- Central machine/landmark near spawn rather than a formal plaza.
+	local hubMachine=Instance.new("Model")
+	hubMachine.Name="HubEggMachine"
+	hubMachine.Parent=world
+	part(hubMachine,"MachineBase",Vector3.new(30,3,24),CFrame.new(0,2,-250),Color3.fromRGB(45,49,57),Enum.Material.Metal)
+	part(hubMachine,"MachineBody",Vector3.new(24,18,18),CFrame.new(0,12,-250),Color3.fromRGB(58,63,73),Enum.Material.Metal)
+	part(hubMachine,"MachineScreen",Vector3.new(12,10,0.6),CFrame.new(0,12,-259.2),Color3.fromRGB(76,185,245),Enum.Material.Glass,0.12)
+	local question=part(hubMachine,"Question",Vector3.new(6,8,0.35),CFrame.new(0,12,-259.6),Color3.fromRGB(240,244,250),Enum.Material.Neon,0.12)
+	part(hubMachine,"MachineRoof",Vector3.new(29,2,23),CFrame.new(0,22,-250),Color3.fromRGB(31,34,41),Enum.Material.Metal)
+	for _,x in ipairs({-9,9}) do
+		part(hubMachine,"Antenna",Vector3.new(1,10,1),CFrame.new(x,28,-250),Color3.fromRGB(31,34,41),Enum.Material.Metal)
+		ball(hubMachine,"AntennaGlow",2.6,Vector3.new(x,33.4,-250),Color3.fromRGB(154,98,255),Enum.Material.Neon,0.08)
+	end
+
+	-- Shop/Index as small side machines rather than bulky modern kiosks.
+	makeKiosk(world,Vector3.new(-72,1,-250),"SHOP",Color3.fromRGB(72,216,98))
+	makeKiosk(world,Vector3.new(72,1,-250),"INDEX",Color3.fromRGB(70,167,245))
+
+	for z=-315,-55,34 do
+		streetLamp(world,Vector3.new(-34,1,z),Color3.fromRGB(255,211,138))
+		streetLamp(world,Vector3.new(34,1,z),Color3.fromRGB(255,211,138))
+	end
+
+	-- Trees and props fill dead space between bases and cliffs.
+	for _,p in ipairs({
+		Vector3.new(-150,1,-304),Vector3.new(150,1,-304),Vector3.new(-150,1,-236),Vector3.new(150,1,-236),
+		Vector3.new(-150,1,-168),Vector3.new(150,1,-168),Vector3.new(-150,1,-100),Vector3.new(150,1,-100),
 	}) do
-		tree(world, p, Color3.fromRGB(225, 149, 191), 0.92)
+		tree(world,p,Color3.fromRGB(235,147,194),0.9)
+	end
+	for _,p in ipairs({Vector3.new(-55,1,-294),Vector3.new(55,1,-294),Vector3.new(-55,1,-72),Vector3.new(55,1,-72)}) do
+		makeBench(world,p,p.X<0 and 90 or -90)
 	end
 
 	-- Eight bases integrated into the hub.
@@ -775,11 +803,11 @@ function WorldBuilder.Build(Config)
 	local bases = {}
 	local baseZs = {-300, -230, -160, -90}
 	for i, z in ipairs(baseZs) do
-		table.insert(bases, makeBase(world, i, Vector3.new(-105, 1, z), colors[i]))
+		table.insert(bases, makeBase(world, i, Vector3.new(-112, 1, z), colors[i]))
 	end
 	for i, z in ipairs(baseZs) do
 		local idx = i + 4
-		table.insert(bases, makeBase(world, idx, Vector3.new(105, 1, z), colors[idx]))
+		table.insert(bases, makeBase(world, idx, Vector3.new(112, 1, z), colors[idx]))
 	end
 
 	-- Continuous avenue and all seven worlds.
