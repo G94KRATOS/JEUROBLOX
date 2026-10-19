@@ -317,6 +317,7 @@ local function createHeroVisual(owner, hero, index)
 		end
 
 		removed.Source = "StolenHero"
+		removed.StolenFromUserId = owner.UserId
 		setCarry(thief, removed)
 		updatePlayerAttributes(owner)
 		notify(thief, removed.Name .. " te suit ! Ramène-le à ta base.", "Success")
@@ -334,10 +335,34 @@ local function addHero(player, hero)
 
 	hero.Id = hero.Id or HttpService:GenerateGUID(false)
 	hero.Source = nil
+	hero.StolenFromUserId = nil
 	table.insert(data.Heroes, hero)
 	createHeroVisual(player, hero, #data.Heroes)
 	updatePlayerAttributes(player)
 	return true
+end
+
+local function returnStolenCarry(player)
+	local data = playerData[player]
+	local hero = data and data.Carry
+	if not hero then return false end
+	if hero.Source ~= "StolenHero" or not hero.StolenFromUserId then
+		clearCarry(player)
+		return false
+	end
+
+	local owner = Players:GetPlayerByUserId(hero.StolenFromUserId)
+	local ownerData = owner and playerData[owner]
+	clearCarry(player)
+
+	if owner and ownerData and #ownerData.Heroes < Config.MaxHeroes then
+		hero.Source = nil
+		hero.StolenFromUserId = nil
+		addHero(owner, hero)
+		notify(owner, hero.Name .. " est revenu à ta base.", "Success")
+		return true
+	end
+	return false
 end
 
 local function claimBase(player)
@@ -457,11 +482,19 @@ for _, base in ipairs(bases) do
 		end
 
 		local hero = data.Carry
+		local stats = player:FindFirstChild("leaderstats")
+		local coins = stats and stats:FindFirstChild("Coins")
+		local speed = stats and stats:FindFirstChild("Speed")
+		local cashBonus = Config.GetReturnBonus(hero)
+		local speedBonus = Config.GetCaptureSpeedReward(hero.WorldKey)
+
 		clearCarry(player)
 		local added = addHero(player, hero)
 		if added then
+			if coins then coins.Value += cashBonus end
+			if speed then speed.Value += speedBonus end
 			hatchRemote:FireClient(player, hero.Name, hero.Rarity, rarityData(hero.Rarity).Color)
-			notify(player, hero.Name .. " rejoint ta base !", "Success")
+			notify(player, hero.Name .. " rejoint ta base ! +$" .. cashBonus .. " • +" .. speedBonus .. " Speed", "Success")
 		end
 	end)
 end
@@ -493,7 +526,7 @@ for index, eggInfo in ipairs(eggs) do
 		local speed = stats and stats:FindFirstChild("Speed")
 		local required = eggInfo.RequiredSpeed or 0
 		if not speed or speed.Value < required then
-			notify(player, "Il te faut " .. required .. " Speed pour voler cet œuf.", "Error")
+			notify(player, "Il te faut " .. required .. " Speed pour voler cette capsule.", "Error")
 			return
 		end
 
@@ -646,13 +679,13 @@ local function setupPlayer(player)
 		updateWalkSpeed(player)
 
 		if playerData[player] and playerData[player].Carry then
-			clearCarry(player)
-			notify(player, "Tu as perdu ce que tu transportais.", "Error")
+			returnStolenCarry(player)
+			notify(player, "Le héros qui te suivait n'est plus avec toi.", "Error")
 		end
 
 		humanoid.Died:Connect(function()
 			if playerData[player] and playerData[player].Carry then
-				clearCarry(player)
+				returnStolenCarry(player)
 			end
 		end)
 	end)
@@ -697,6 +730,9 @@ for _, player in ipairs(Players:GetPlayers()) do
 end
 
 Players.PlayerRemoving:Connect(function(player)
+	if playerData[player] and playerData[player].Carry then
+		returnStolenCarry(player)
+	end
 	saveData(player)
 	clearCarryVisual(player)
 	releaseBase(player)
