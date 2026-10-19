@@ -684,11 +684,11 @@ function WorldBuilder.Build(Config)
 		if worldConfig.Key == "OnePiece" then floor.Material = Enum.Material.Sand end
 		if worldConfig.Key == "DragonBall" then floor.Material = Enum.Material.Sandstone end
 		if worldConfig.Key == "DemonSlayer" then floor.Material = Enum.Material.Ground end
-		if worldConfig.Key == "JJK" then floor.Material = Enum.Material.Asphalt end
+		if worldConfig.Key == "JJK" then floor.Material = Enum.Material.Concrete end
 		if worldConfig.Key == "Bleach" then floor.Material = Enum.Material.Marble end
 		if worldConfig.Key == "AOT" then floor.Material = Enum.Material.Cobblestone end
 
-		local road = part(world, worldConfig.Key .. "_Road", Vector3.new(36, 0.5, 236), CFrame.new(0, 1.2, z), worldConfig.Key == "Bleach" and Color3.fromRGB(245,245,248) or Color3.fromRGB(207, 199, 183), worldConfig.Key == "JJK" and Enum.Material.Asphalt or Enum.Material.Concrete)
+		local road = part(world, worldConfig.Key .. "_Road", Vector3.new(36, 0.5, 236), CFrame.new(0, 1.2, z), worldConfig.Key == "Bleach" and Color3.fromRGB(245,245,248) or Color3.fromRGB(207, 199, 183), worldConfig.Key == "JJK" and Enum.Material.Concrete or Enum.Material.Concrete)
 		road.TopSurface = Enum.SurfaceType.Smooth
 
 		local gateZ = z - 126
