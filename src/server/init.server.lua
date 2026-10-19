@@ -629,9 +629,14 @@ end
 local function saveData(player)
 	local payload = serialize(player)
 	if not payload then return end
-	pcall(function()
-		store:SetAsync("u_" .. player.UserId, payload)
+	local ok, err = pcall(function()
+		store:UpdateAsync("u_" .. player.UserId, function()
+			return payload
+		end)
 	end)
+	if not ok then
+		warn("[AnimeCapsuleHeist] Save failed for", player.UserId, err)
+	end
 end
 
 local function setupPlayer(player)
@@ -752,6 +757,18 @@ Players.PlayerRemoving:Connect(function(player)
 	clearCarryVisual(player)
 	releaseBase(player)
 	playerData[player] = nil
+end)
+
+local AUTOSAVE_INTERVAL = 75
+task.spawn(function()
+	while true do
+		task.wait(AUTOSAVE_INTERVAL)
+		for player in pairs(playerData) do
+			if player.Parent == Players then
+				task.spawn(saveData, player)
+			end
+		end
+	end
 end)
 
 task.spawn(function()
