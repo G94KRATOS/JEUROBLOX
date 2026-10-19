@@ -940,7 +940,7 @@ function WorldBuilder.Build(Config)
 		end
 
 		for capsuleIndex, x in ipairs({-48, 0, 48}) do
-			table.insert(eggs, eggShrine(world, worldConfig, Vector3.new(x, 2.8, z + 78), capsuleIndex))
+			table.insert(eggs, eggShrine(world, worldConfig, Vector3.new(x, 2.8, z + 24), capsuleIndex))
 		end
 
 		local worldTitle = part(world, worldConfig.Key .. "_TitleAnchor", Vector3.new(1,1,1), CFrame.new(0, 28, z - 80), Color3.new(1,1,1), Enum.Material.Neon, 1)
