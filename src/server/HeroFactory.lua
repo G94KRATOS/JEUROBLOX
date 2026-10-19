@@ -54,6 +54,63 @@ local WORLD_STYLE = {
 	},
 }
 
+local HERO_OVERRIDES = {
+	-- Shinobi world
+	["Kakashi"] = {Body=Color3.fromRGB(73,95,78),Secondary=Color3.fromRGB(45,55,65),Hair=Color3.fromRGB(205,211,218),Skin=Color3.fromRGB(231,188,155),Feature="Mask"},
+	["Gaara"] = {Body=Color3.fromRGB(122,70,56),Secondary=Color3.fromRGB(93,63,54),Hair=Color3.fromRGB(168,58,43),Skin=Color3.fromRGB(230,184,154),Feature="Headband"},
+	["Itachi"] = {Body=Color3.fromRGB(35,37,43),Secondary=Color3.fromRGB(181,45,54),Hair=Color3.fromRGB(28,30,34),Skin=Color3.fromRGB(230,184,154),Feature="Headband"},
+	["Naruto Sage"] = {Body=Color3.fromRGB(231,111,35),Secondary=Color3.fromRGB(42,53,72),Hair=Color3.fromRGB(244,202,58),Skin=Color3.fromRGB(239,194,158),Feature="Headband"},
+	["Six Paths Naruto"] = {Body=Color3.fromRGB(244,214,103),Secondary=Color3.fromRGB(44,50,59),Hair=Color3.fromRGB(248,216,71),Skin=Color3.fromRGB(241,199,162),Feature="Spikes"},
+	["Madara"] = {Body=Color3.fromRGB(104,41,45),Secondary=Color3.fromRGB(54,37,41),Hair=Color3.fromRGB(28,29,33),Skin=Color3.fromRGB(229,182,151),Feature="Spikes"},
+
+	-- Pirate world
+	["Nami"] = {Body=Color3.fromRGB(77,151,199),Secondary=Color3.fromRGB(235,230,212),Hair=Color3.fromRGB(223,112,45),Skin=Color3.fromRGB(237,188,149),Feature="Hat"},
+	["Sanji"] = {Body=Color3.fromRGB(43,47,56),Secondary=Color3.fromRGB(60,67,78),Hair=Color3.fromRGB(225,191,83),Skin=Color3.fromRGB(237,189,149),Feature="Hat"},
+	["Zoro"] = {Body=Color3.fromRGB(57,124,77),Secondary=Color3.fromRGB(39,45,46),Hair=Color3.fromRGB(92,174,91),Skin=Color3.fromRGB(232,185,146),Feature="Sword"},
+	["Ace"] = {Body=Color3.fromRGB(198,86,45),Secondary=Color3.fromRGB(46,49,57),Hair=Color3.fromRGB(31,32,35),Skin=Color3.fromRGB(231,179,139),Feature="Hat"},
+	["Law"] = {Body=Color3.fromRGB(59,69,85),Secondary=Color3.fromRGB(227,225,216),Hair=Color3.fromRGB(30,31,34),Skin=Color3.fromRGB(230,183,146),Feature="Hat"},
+	["Shanks"] = {Body=Color3.fromRGB(153,47,49),Secondary=Color3.fromRGB(42,44,49),Hair=Color3.fromRGB(156,45,43),Skin=Color3.fromRGB(231,181,144),Feature="Sword"},
+	["Luffy Gear 4"] = {Body=Color3.fromRGB(193,49,49),Secondary=Color3.fromRGB(38,40,46),Hair=Color3.fromRGB(29,30,34),Skin=Color3.fromRGB(231,178,139),Feature="Hat"},
+	["Luffy Gear 5"] = {Body=Color3.fromRGB(237,237,231),Secondary=Color3.fromRGB(186,186,181),Hair=Color3.fromRGB(245,245,240),Skin=Color3.fromRGB(235,187,147),Feature="Spikes"},
+
+	-- Saiyan world
+	["Vegeta"] = {Body=Color3.fromRGB(43,70,155),Secondary=Color3.fromRGB(235,236,239),Hair=Color3.fromRGB(245,205,64),Skin=Color3.fromRGB(235,184,143),Feature="Spikes"},
+	["Goku Super Saiyan"] = {Body=Color3.fromRGB(231,111,36),Secondary=Color3.fromRGB(49,77,157),Hair=Color3.fromRGB(247,211,66),Skin=Color3.fromRGB(237,187,145),Feature="Spikes"},
+	["Broly"] = {Body=Color3.fromRGB(83,158,88),Secondary=Color3.fromRGB(107,67,143),Hair=Color3.fromRGB(222,232,90),Skin=Color3.fromRGB(222,169,126),Feature="Spikes"},
+	["Gohan Beast"] = {Body=Color3.fromRGB(94,78,146),Secondary=Color3.fromRGB(47,49,58),Hair=Color3.fromRGB(229,232,239),Skin=Color3.fromRGB(237,188,148),Feature="Spikes"},
+	["Ultra Instinct Goku"] = {Body=Color3.fromRGB(59,63,71),Secondary=Color3.fromRGB(42,45,52),Hair=Color3.fromRGB(207,214,222),Skin=Color3.fromRGB(238,189,147),Feature="Spikes"},
+
+	-- Demon slayer world
+	["Tanjiro"] = {Body=Color3.fromRGB(46,103,78),Secondary=Color3.fromRGB(31,35,41),Hair=Color3.fromRGB(88,43,42),Skin=Color3.fromRGB(237,191,156),Feature="Katana"},
+	["Zenitsu"] = {Body=Color3.fromRGB(229,164,48),Secondary=Color3.fromRGB(246,232,180),Hair=Color3.fromRGB(235,193,63),Skin=Color3.fromRGB(238,194,159),Feature="Katana"},
+	["Giyu"] = {Body=Color3.fromRGB(48,87,125),Secondary=Color3.fromRGB(115,55,52),Hair=Color3.fromRGB(36,39,44),Skin=Color3.fromRGB(235,188,153),Feature="Katana"},
+	["Rengoku"] = {Body=Color3.fromRGB(239,225,187),Secondary=Color3.fromRGB(196,56,45),Hair=Color3.fromRGB(239,198,66),Skin=Color3.fromRGB(238,192,155),Feature="Katana"},
+	["Akaza"] = {Body=Color3.fromRGB(180,103,124),Secondary=Color3.fromRGB(77,104,165),Hair=Color3.fromRGB(194,78,89),Skin=Color3.fromRGB(231,174,149),Feature="Spikes"},
+	["Yoriichi"] = {Body=Color3.fromRGB(120,48,50),Secondary=Color3.fromRGB(38,40,46),Hair=Color3.fromRGB(75,38,38),Skin=Color3.fromRGB(232,184,150),Feature="Katana"},
+
+	-- Cursed world
+	["Gojo"] = {Body=Color3.fromRGB(45,49,61),Secondary=Color3.fromRGB(24,26,31),Hair=Color3.fromRGB(226,232,240),Skin=Color3.fromRGB(239,196,163),Feature="Blindfold"},
+	["Awakened Gojo"] = {Body=Color3.fromRGB(225,229,236),Secondary=Color3.fromRGB(67,177,226),Hair=Color3.fromRGB(241,244,248),Skin=Color3.fromRGB(240,198,165),Feature="Blindfold"},
+	["Sukuna"] = {Body=Color3.fromRGB(59,55,64),Secondary=Color3.fromRGB(170,63,73),Hair=Color3.fromRGB(225,121,130),Skin=Color3.fromRGB(229,176,150),Feature="Spikes"},
+	["Megumi"] = {Body=Color3.fromRGB(48,53,66),Secondary=Color3.fromRGB(31,34,41),Hair=Color3.fromRGB(31,34,38),Skin=Color3.fromRGB(236,190,157),Feature="Spikes"},
+	["Nobara"] = {Body=Color3.fromRGB(60,62,70),Secondary=Color3.fromRGB(122,79,48),Hair=Color3.fromRGB(181,111,60),Skin=Color3.fromRGB(239,194,160),Feature="Sword"},
+	["Toji"] = {Body=Color3.fromRGB(42,47,50),Secondary=Color3.fromRGB(58,68,70),Hair=Color3.fromRGB(31,33,36),Skin=Color3.fromRGB(226,176,142),Feature="Sword"},
+
+	-- Soul world
+	["Ichigo"] = {Body=Color3.fromRGB(32,34,39),Secondary=Color3.fromRGB(232,235,239),Hair=Color3.fromRGB(226,121,49),Skin=Color3.fromRGB(238,192,156),Feature="Sword"},
+	["Aizen"] = {Body=Color3.fromRGB(232,231,219),Secondary=Color3.fromRGB(78,66,57),Hair=Color3.fromRGB(121,80,53),Skin=Color3.fromRGB(235,189,155),Feature="Sword"},
+	["Kenpachi"] = {Body=Color3.fromRGB(37,39,44),Secondary=Color3.fromRGB(230,231,226),Hair=Color3.fromRGB(31,32,35),Skin=Color3.fromRGB(221,168,136),Feature="Spikes"},
+	["True Bankai Ichigo"] = {Body=Color3.fromRGB(24,26,31),Secondary=Color3.fromRGB(195,45,52),Hair=Color3.fromRGB(38,39,43),Skin=Color3.fromRGB(236,189,154),Feature="Sword"},
+
+	-- Titan world
+	["Levi"] = {Body=Color3.fromRGB(79,96,77),Secondary=Color3.fromRGB(72,53,42),Hair=Color3.fromRGB(30,32,35),Skin=Color3.fromRGB(232,184,150),Feature="Blades"},
+	["Mikasa"] = {Body=Color3.fromRGB(75,91,76),Secondary=Color3.fromRGB(148,47,51),Hair=Color3.fromRGB(37,38,42),Skin=Color3.fromRGB(235,187,151),Feature="Blades"},
+	["Attack Titan Eren"] = {Body=Color3.fromRGB(183,111,88),Secondary=Color3.fromRGB(96,54,47),Hair=Color3.fromRGB(65,45,38),Skin=Color3.fromRGB(207,135,105),Feature="Spikes"},
+	["Armored Titan"] = {Body=Color3.fromRGB(191,157,119),Secondary=Color3.fromRGB(214,194,154),Hair=Color3.fromRGB(216,194,139),Skin=Color3.fromRGB(205,158,121),Feature="Spikes"},
+	["Founding Titan"] = {Body=Color3.fromRGB(137,91,82),Secondary=Color3.fromRGB(82,61,58),Hair=Color3.fromRGB(76,55,50),Skin=Color3.fromRGB(197,139,117),Feature="Spikes"},
+}
+
+
 local function part(parent, name, size, cf, color, material, transparency)
 	local p = Instance.new("Part")
 	p.Name = name
@@ -186,6 +243,9 @@ local function addFeature(model, feature, base, style, scale)
 		part(model, "SwordHandle", Vector3.new(0.75 * scale, 1.8 * scale, 0.55 * scale), base * CFrame.new(2.7 * scale, -0.2 * scale, 0), style.Secondary, Enum.Material.Wood)
 	elseif feature == "Blindfold" then
 		part(model, "Blindfold", Vector3.new(3.3 * scale, 0.72 * scale, 0.35 * scale), base * CFrame.new(0, 5.35 * scale, -1.62 * scale), Color3.fromRGB(20, 22, 27), Enum.Material.Fabric)
+	elseif feature == "Mask" then
+		part(model, "FaceMask", Vector3.new(3.2 * scale, 1.2 * scale, 0.35 * scale), base * CFrame.new(0, 6.7 * scale, -1.55 * scale), Color3.fromRGB(35, 39, 47), Enum.Material.Fabric)
+		part(model, "ForeheadBand", Vector3.new(3.5 * scale, 0.6 * scale, 0.35 * scale), base * CFrame.new(0, 8.05 * scale, -1.55 * scale), Color3.fromRGB(70, 87, 109), Enum.Material.Fabric)
 	elseif feature == "Blades" then
 		for _, x in ipairs({-2.25, 2.25}) do
 			part(model, "Blade", Vector3.new(0.35 * scale, 4.6 * scale, 0.22 * scale), base * CFrame.new(x * scale, 2.5 * scale, 0) * CFrame.Angles(0, 0, math.rad(x < 0 and 8 or -8)), Color3.fromRGB(204, 214, 222), Enum.Material.Metal)
@@ -195,7 +255,7 @@ end
 
 function HeroFactory.Create(hero, rarityColor, scale)
 	scale = scale or 1
-	local style = WORLD_STYLE[hero.WorldKey] or WORLD_STYLE.Naruto
+	local style = HERO_OVERRIDES[hero.Name] or WORLD_STYLE[hero.WorldKey] or WORLD_STYLE.Naruto
 
 	local model = Instance.new("Model")
 	model.Name = "Hero_" .. tostring(hero.Name)
