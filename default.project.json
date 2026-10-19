@@ -5,20 +5,25 @@
 
     "ReplicatedStorage": {
       "Shared": {
-        "$path": "src/shared"
+        "GameConfig": {
+          "$path": "src/shared/GameConfig.lua"
+        }
       }
     },
 
     "ServerScriptService": {
-      "Server": {
-        "$path": "src/server"
+      "GameServer": {
+        "$path": "src/server/init.server.lua"
+      },
+      "WorldBuilder": {
+        "$path": "src/server/WorldBuilder.lua"
       }
     },
 
     "StarterPlayer": {
       "StarterPlayerScripts": {
         "Client": {
-          "$path": "src/client"
+          "$path": "src/client/init.client.lua"
         }
       }
     },
