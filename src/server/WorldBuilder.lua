@@ -403,7 +403,7 @@ local function eggShrine(parent, world, pos, index)
 		Egg = core,
 		Prompt = pr,
 		Accent = accent,
-		VisualParts = model:GetDescendants(),
+		PreviewModel = silhouette,
 	}
 end
 
