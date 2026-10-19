@@ -370,7 +370,7 @@ local function eggShrine(parent, world, pos, index)
 	cylinder(model, "CapsuleBase", 10.8, 2.4, CFrame.new(pos + Vector3.new(0, 2.6, 0)), dark, Enum.Material.Metal)
 	local glass = cylinder(model, "CapsuleGlass", 9.5, 8.4, CFrame.new(pos + Vector3.new(0, 7.8, 0)), Color3.fromRGB(188, 232, 255), Enum.Material.Glass, 0.6)
 	glass.CastShadow = false
-	cylinder(model, "CapsuleTop", 10.8, 2.0, CFrame.new(pos + Vector3.new(0, 12.8, 0)), metal, Enum.Material.Metal)
+	local capsuleTop = cylinder(model, "CapsuleTop", 10.8, 2.0, CFrame.new(pos + Vector3.new(0, 12.8, 0)), metal, Enum.Material.Metal)
 	cylinder(model, "CapsuleTopRing", 9.2, 0.28, CFrame.new(pos + Vector3.new(0, 13.85, 0)), accent, Enum.Material.Neon, 0.12)
 
 	-- World silhouette inside the pod.
@@ -407,6 +407,8 @@ local function eggShrine(parent, world, pos, index)
 		Prompt = pr,
 		Accent = accent,
 		PreviewModel = silhouette,
+		Top = capsuleTop,
+		TopBaseCFrame = capsuleTop.CFrame,
 	}
 end
 
