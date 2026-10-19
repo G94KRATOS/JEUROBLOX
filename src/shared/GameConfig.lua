@@ -8,6 +8,16 @@ Config.MaxHeroes = 12
 Config.MaxPlayers = 8
 Config.CapsuleStealHold = 0.65
 
+Config.SpeedRewards = {
+	Naruto = 5,
+	OnePiece = 12,
+	DragonBall = 28,
+	DemonSlayer = 60,
+	JJK = 130,
+	Bleach = 280,
+	AOT = 600,
+}
+
 Config.Rarities = {
 	Common = { Color = Color3.fromRGB(210, 214, 222), Income = 5 },
 	Rare = { Color = Color3.fromRGB(68, 164, 255), Income = 15 },
@@ -212,6 +222,14 @@ function Config.GetHeroIncome(hero)
 	local world = Config.GetWorld(hero.WorldKey) or Config.NarutoWorld
 	local worldMultiplier = world.IncomeMultiplier or 1
 	return math.max(1, math.floor(rarity.Income * worldMultiplier))
+end
+
+function Config.GetCaptureSpeedReward(worldKey)
+	return Config.SpeedRewards[worldKey] or 5
+end
+
+function Config.GetReturnBonus(hero)
+	return math.max(25, Config.GetHeroIncome(hero) * 8)
 end
 
 function Config.GetTrainingGain(trainingLevel)
