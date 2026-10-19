@@ -31,8 +31,14 @@ local function wedge(parent, name, size, cf, color, material, transparency)
 	return p
 end
 
-local function ball(parent, name, diameter, pos, color, material, transparency)
-	local p = part(parent, name, Vector3.new(diameter, diameter, diameter), CFrame.new(pos), color, material, transparency)
+local function ball(parent, name, diameter, posOrCFrame, color, material, transparency)
+	local cf
+	if typeof(posOrCFrame) == "CFrame" then
+		cf = posOrCFrame
+	else
+		cf = CFrame.new(posOrCFrame)
+	end
+	local p = part(parent, name, Vector3.new(diameter, diameter, diameter), cf, color, material, transparency)
 	p.Shape = Enum.PartType.Ball
 	return p
 end
@@ -203,26 +209,28 @@ local function portalGate(parent, z, world, index)
 	gate.Name = world.Key .. "_Gate"
 	gate.Parent = parent
 
-	local dark = Color3.fromRGB(33, 36, 44)
 	local accent = world.Accent
-	part(gate, "PillarL", Vector3.new(9, 30, 9), CFrame.new(-27, 15, z), dark, Enum.Material.Slate)
-	part(gate, "PillarR", Vector3.new(9, 30, 9), CFrame.new(27, 15, z), dark, Enum.Material.Slate)
-	part(gate, "TopBeam", Vector3.new(63, 7, 10), CFrame.new(0, 30, z), dark, Enum.Material.Slate)
+	local wood = Color3.fromRGB(128, 74, 42)
+	local woodDark = Color3.fromRGB(82, 55, 38)
+	local cream = Color3.fromRGB(247, 236, 212)
 
-	part(gate, "AccentL", Vector3.new(1.4, 24, 1.4), CFrame.new(-27, 15, z - 4.6), accent, Enum.Material.Neon)
-	part(gate, "AccentR", Vector3.new(1.4, 24, 1.4), CFrame.new(27, 15, z - 4.6), accent, Enum.Material.Neon)
-	part(gate, "AccentTop", Vector3.new(54, 1.4, 1.4), CFrame.new(0, 30, z - 5), accent, Enum.Material.Neon)
+	-- Cartoon-simulator gateway: wood, bright trim and a compact sign.
+	for _, x in ipairs({-24, 24}) do
+		part(gate, "Pillar", Vector3.new(5.5, 24, 5.5), CFrame.new(x, 12, z), wood, Enum.Material.WoodPlanks)
+		part(gate, "PillarFoot", Vector3.new(7.5, 2, 7.5), CFrame.new(x, 1, z), woodDark, Enum.Material.Wood)
+		part(gate, "Lantern", Vector3.new(3.6, 4.6, 3.6), CFrame.new(x, 21, z - 4.3), accent, Enum.Material.Glass, 0.12)
+	end
+	part(gate, "TopBeam", Vector3.new(58, 5.2, 6.5), CFrame.new(0, 24, z), wood, Enum.Material.WoodPlanks)
+	part(gate, "Roof", Vector3.new(68, 2.6, 9), CFrame.new(0, 28, z), woodDark, Enum.Material.Slate)
 
-	local sign = part(gate, "WorldSign", Vector3.new(38, 8, 1), CFrame.new(0, 25, z - 5.6), Color3.fromRGB(246, 247, 250), Enum.Material.SmoothPlastic)
-	surfaceLabel(sign, Enum.NormalId.Front, world.DisplayName .. "\n" .. world.RequiredSpeed .. " SPEED", accent, Color3.fromRGB(245, 246, 249))
+	local sign = part(gate, "WorldSign", Vector3.new(32, 6, 1), CFrame.new(0, 21.5, z - 3.8), cream, Enum.Material.SmoothPlastic)
+	surfaceLabel(sign, Enum.NormalId.Front, world.DisplayName, Color3.fromRGB(36,38,44), cream)
+
+	local speedSign = part(gate, "SpeedSign", Vector3.new(18, 3.8, 0.8), CFrame.new(0, 15.7, z - 3.7), accent, Enum.Material.SmoothPlastic)
+	surfaceLabel(speedSign, Enum.NormalId.Front, tostring(world.RequiredSpeed) .. " SPEED", Color3.fromRGB(255,255,255), accent)
 
 	local trigger = part(gate, "GateTrigger", Vector3.new(320, 18, 6), CFrame.new(0, 9, z + 2), accent, Enum.Material.ForceField, 1)
 	trigger.CanCollide = false
-
-	for i = -2, 2 do
-		local beam = part(gate, "EnergyBar", Vector3.new(4, 0.45, 2.5), CFrame.new(i * 8, 16 + math.abs(i) * 2.1, z + 1.1) * CFrame.Angles(0, 0, math.rad(i * 7)), accent, Enum.Material.Neon, 0.2)
-		beam.CanCollide = false
-	end
 
 	return {
 		WorldKey = world.Key,
@@ -422,49 +430,6 @@ local function basicHouse(parent, pos, accent, scale)
 	part(parent, "Door", Vector3.new(5, 8, 0.7), CFrame.new(pos + Vector3.new(0, 4, -d / 2 - 0.4)), Color3.fromRGB(78, 52, 39), Enum.Material.Wood)
 end
 
-local function giantGuardian(parent, pos, name, bodyColor, accent, hairColor, feature, scale)
-	scale = scale or 1
-	local model = Instance.new("Model")
-	model.Name = name
-	model.Parent = parent
-
-	local skin = Color3.fromRGB(236, 188, 150)
-	local dark = Color3.fromRGB(42, 45, 52)
-
-	part(model, "LegL", Vector3.new(7*scale, 24*scale, 7*scale), CFrame.new(pos + Vector3.new(-6*scale, 12*scale, 0)), dark, Enum.Material.SmoothPlastic)
-	part(model, "LegR", Vector3.new(7*scale, 24*scale, 7*scale), CFrame.new(pos + Vector3.new(6*scale, 12*scale, 0)), dark, Enum.Material.SmoothPlastic)
-	part(model, "Torso", Vector3.new(25*scale, 28*scale, 12*scale), CFrame.new(pos + Vector3.new(0, 38*scale, 0)), bodyColor, Enum.Material.Fabric)
-	part(model, "ChestAccent", Vector3.new(19*scale, 8*scale, 12.5*scale), CFrame.new(pos + Vector3.new(0, 39*scale, -0.2)), accent, Enum.Material.Fabric, 0.08)
-
-	for _,x in ipairs({-17,17}) do
-		part(model, x < 0 and "ArmL" or "ArmR", Vector3.new(6*scale, 25*scale, 6*scale), CFrame.new(pos + Vector3.new(x*scale, 38*scale, 0)) * CFrame.Angles(0,0,math.rad(x<0 and -8 or 8)), skin, Enum.Material.SmoothPlastic)
-	end
-
-	ball(model, "Head", 16*scale, CFrame.new(pos + Vector3.new(0, 61*scale, 0)), skin, Enum.Material.SmoothPlastic)
-	ball(model, "Hair", 17*scale, CFrame.new(pos + Vector3.new(0, 67*scale, 0.5*scale)), hairColor, Enum.Material.SmoothPlastic)
-
-	if feature == "Hat" then
-		cylinder(model, "HatBrim", 25*scale, 2*scale, CFrame.new(pos + Vector3.new(0, 70*scale, 0)), Color3.fromRGB(222,177,78), Enum.Material.Fabric)
-		cylinder(model, "HatCrown", 15*scale, 7*scale, CFrame.new(pos + Vector3.new(0, 74*scale, 0)), Color3.fromRGB(222,177,78), Enum.Material.Fabric)
-	elseif feature == "Spikes" then
-		for i=0,7 do
-			local a=math.rad(i*45)
-			wedge(model,"HairSpike",Vector3.new(5*scale,12*scale,5*scale),CFrame.new(pos+Vector3.new(math.cos(a)*7*scale,73*scale,math.sin(a)*7*scale))*CFrame.Angles(0,-a,math.rad(-20)),hairColor,Enum.Material.SmoothPlastic)
-		end
-	elseif feature == "Sword" then
-		part(model,"GiantBlade",Vector3.new(3*scale,42*scale,1.2*scale),CFrame.new(pos+Vector3.new(22*scale,35*scale,0))*CFrame.Angles(0,0,math.rad(-12)),Color3.fromRGB(210,220,230),Enum.Material.Metal)
-		part(model,"GiantHandle",Vector3.new(5*scale,10*scale,3*scale),CFrame.new(pos+Vector3.new(26*scale,12*scale,0)),dark,Enum.Material.Wood)
-	elseif feature == "Blindfold" then
-		part(model,"Blindfold",Vector3.new(17*scale,4*scale,1.6*scale),CFrame.new(pos+Vector3.new(0,62*scale,-8*scale)),Color3.fromRGB(18,20,25),Enum.Material.Fabric)
-	end
-
-	cylinder(model,"GuardianAura",34*scale,0.55*scale,CFrame.new(pos+Vector3.new(0,0.7*scale,0)),accent,Enum.Material.Neon,0.38)
-	addHighlight(model, accent)
-
-	return model
-end
-
-
 local function ninjaWorld(parent, world)
 	local z=world.CenterZ
 	local wood=Color3.fromRGB(145,84,45)
@@ -515,17 +480,6 @@ local function ninjaWorld(parent, world)
 		cylinder(parent,"Target",8,0.8,CFrame.new(x,8,z+54),Color3.fromRGB(238,229,210),Enum.Material.Wood)
 	end
 
-	-- Big ninja landmark at the back gives the same "giant thing in the zone" readability as popular simulator maps.
-	local landmark=Instance.new("Model")
-	landmark.Name="NinjaLandmark"
-	landmark.Parent=parent
-	part(landmark,"LegL",Vector3.new(7,22,7),CFrame.new(-12,12,z+94),Color3.fromRGB(51,55,63),Enum.Material.SmoothPlastic)
-	part(landmark,"LegR",Vector3.new(7,22,7),CFrame.new(12,12,z+94),Color3.fromRGB(51,55,63),Enum.Material.SmoothPlastic)
-	part(landmark,"Torso",Vector3.new(31,28,13),CFrame.new(0,36,z+94),Color3.fromRGB(228,111,47),Enum.Material.SmoothPlastic)
-	ball(landmark,"Head",18,Vector3.new(0,60,z+94),Color3.fromRGB(238,193,157),Enum.Material.SmoothPlastic)
-	ball(landmark,"Hair",20,Vector3.new(0,68,z+94),Color3.fromRGB(238,197,64),Enum.Material.SmoothPlastic)
-	part(landmark,"Headband",Vector3.new(20,4,19),CFrame.new(0,63,z+94),Color3.fromRGB(55,82,109),Enum.Material.Metal)
-	addHighlight(landmark,world.Accent)
 
 	-- Hokage-style stacked tower in opposite corner.
 	for level=1,4 do
@@ -565,8 +519,6 @@ local function pirateWorld(parent, world)
 		local pz = z - 75 + math.floor(i / 5) * 24
 		cylinder(parent, "Barrel", 4, 5, CFrame.new(px, 3, pz), Color3.fromRGB(112, 73, 44), Enum.Material.Wood)
 	end
-
-	giantGuardian(parent, Vector3.new(94,1,z+78), "PirateGuardian", Color3.fromRGB(194,59,48), world.Accent, Color3.fromRGB(45,38,34), "Hat", 0.92)
 end
 
 local function dragonWorld(parent, world)
@@ -593,8 +545,6 @@ local function dragonWorld(parent, world)
 		local orb = ball(parent, "EnergyOrb", 8, Vector3.new(x, 12, z - 62), x == 0 and Color3.fromRGB(130, 216, 255) or world.Accent, Enum.Material.Neon, 0.05)
 		pointLight(orb, orb.Color, 22, 1.6)
 	end
-
-	giantGuardian(parent, Vector3.new(101,1,z+77), "SaiyanGuardian", Color3.fromRGB(226,109,37), world.Accent, Color3.fromRGB(245,204,62), "Spikes", 0.9)
 end
 
 local function demonWorld(parent, world)
@@ -619,8 +569,6 @@ local function demonWorld(parent, world)
 	local moon = ball(parent, "CrimsonMoon", 34, Vector3.new(-105, 45, z + 80), Color3.fromRGB(255, 100, 100), Enum.Material.Neon, 0.12)
 	moon.CanCollide = false
 	pointLight(moon, moon.Color, 60, 1.8)
-
-	giantGuardian(parent, Vector3.new(-92,1,z+75), "SlayerGuardian", Color3.fromRGB(48,91,76), world.Accent, Color3.fromRGB(55,44,43), "Sword", 0.86)
 end
 
 local function cursedWorld(parent, world)
@@ -640,8 +588,6 @@ local function cursedWorld(parent, world)
 	part(parent, "JujutsuSchool", Vector3.new(70, 22, 46), CFrame.new(0, 12, z + 72), Color3.fromRGB(56, 60, 69), Enum.Material.Brick)
 	part(parent, "SchoolRoof", Vector3.new(78, 3, 54), CFrame.new(0, 24, z + 72), Color3.fromRGB(34, 37, 44), Enum.Material.Slate)
 	part(parent, "SchoolGateGlow", Vector3.new(22, 0.7, 1), CFrame.new(0, 12, z + 48.5), world.Accent, Enum.Material.Neon)
-
-	giantGuardian(parent, Vector3.new(-94,1,z+74), "CursedGuardian", Color3.fromRGB(51,54,68), world.Accent, Color3.fromRGB(220,225,232), "Blindfold", 0.9)
 end
 
 local function soulWorld(parent, world)
@@ -660,8 +606,6 @@ local function soulWorld(parent, world)
 			crystal(parent, Vector3.new(x, 1, z + dz), Color3.fromRGB(98, 221, 255), 0.9)
 		end
 	end
-
-	giantGuardian(parent, Vector3.new(96,1,z+76), "SoulGuardian", Color3.fromRGB(34,36,41), world.Accent, Color3.fromRGB(219,110,44), "Sword", 0.9)
 end
 
 local function titanWorld(parent, world)
@@ -703,7 +647,7 @@ local function decorateBoundary(world, minZ, maxZ)
 	-- Organic terrain shell hides the rectangular playfield and gives modern depth/shadows.
 	for z = minZ - 10, maxZ + 10, 72 do
 		for _, side in ipairs({-1, 1}) do
-			local x = side * 184
+			local x = side * 205
 			local variant = math.floor((z - minZ) / 72) % 4
 			local radius = 32 + variant * 4
 			Terrain:FillBall(Vector3.new(x, 24 + variant * 3, z), radius, Enum.Material.Rock)
@@ -712,8 +656,8 @@ local function decorateBoundary(world, minZ, maxZ)
 
 			-- Foreground rocks and trees break the terrain silhouette.
 			if variant % 2 == 0 then
-				rock(world, Vector3.new(side * 153, 8, z + 10), Vector3.new(16, 16, 19), Color3.fromRGB(96, 87, 76))
-				tree(world, Vector3.new(side * 145, 1, z - 20), Color3.fromRGB(58, 119, 67), 1.0)
+				rock(world, Vector3.new(side * 172, 8, z + 10), Vector3.new(16, 16, 19), Color3.fromRGB(96, 87, 76))
+				tree(world, Vector3.new(side * 164, 1, z - 20), Color3.fromRGB(58, 119, 67), 1.0)
 			end
 		end
 	end
@@ -831,13 +775,13 @@ end
 
 local function configureLighting()
 	Lighting.ClockTime = 13.2
-	Lighting.Brightness = 2.8
+	Lighting.Brightness = 2.25
 	Lighting.ExposureCompensation = 0.02
 	Lighting.GlobalShadows = true
 	Lighting.ShadowSoftness = 0.35
 	Lighting.GeographicLatitude = 35
-	Lighting.Ambient = Color3.fromRGB(118, 124, 138)
-	Lighting.OutdoorAmbient = Color3.fromRGB(172, 178, 190)
+	Lighting.Ambient = Color3.fromRGB(132, 138, 150)
+	Lighting.OutdoorAmbient = Color3.fromRGB(160, 168, 180)
 	Lighting.EnvironmentDiffuseScale = 0.55
 	Lighting.EnvironmentSpecularScale = 0.75
 
@@ -848,7 +792,7 @@ local function configureLighting()
 
 	local bloom = Instance.new("BloomEffect")
 	bloom.Name = "AnimeBloom"
-	bloom.Intensity = 0.08
+	bloom.Intensity = 0.04
 	bloom.Size = 12
 	bloom.Threshold = 1.8
 	bloom.Parent = Lighting
@@ -862,7 +806,7 @@ local function configureLighting()
 
 	local atmosphere = Instance.new("Atmosphere")
 	atmosphere.Name = "AnimeAtmosphere"
-	atmosphere.Density = 0.16
+	atmosphere.Density = 0.11
 	atmosphere.Offset = 0.05
 	atmosphere.Color = Color3.fromRGB(213, 228, 244)
 	atmosphere.Decay = Color3.fromRGB(122, 145, 170)
@@ -897,6 +841,8 @@ end
 function WorldBuilder.Build(Config)
 	local old = workspace:FindFirstChild("AnimeEggWorld")
 	if old then old:Destroy() end
+	local oldError = workspace:FindFirstChild("WORLD_BUILD_ERROR")
+	if oldError then oldError:Destroy() end
 	local baseplate = workspace:FindFirstChild("Baseplate")
 	if baseplate then baseplate:Destroy() end
 	Terrain:Clear()
@@ -1004,8 +950,6 @@ function WorldBuilder.Build(Config)
 			table.insert(eggs, eggShrine(world, worldConfig, Vector3.new(x, 2.8, z + 24), capsuleIndex))
 		end
 
-		local worldTitle = part(world, worldConfig.Key .. "_TitleAnchor", Vector3.new(1,1,1), CFrame.new(0, 28, z - 80), Color3.new(1,1,1), Enum.Material.Neon, 1)
-		floatingLabel(worldTitle, worldConfig.DisplayName, worldConfig.Accent, 330, 60, Vector3.new(), 180)
 	end
 
 	-- Spawn.
