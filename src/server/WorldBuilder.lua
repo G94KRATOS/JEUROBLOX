@@ -1,4 +1,5 @@
 local Lighting = game:GetService("Lighting")
+local Terrain = workspace.Terrain
 
 local WorldBuilder = {}
 
@@ -641,19 +642,74 @@ local WORLD_BUILDERS = {
 }
 
 local function decorateBoundary(world, minZ, maxZ)
-	-- Layered irregular cliff line instead of four giant flat walls.
-	for z = minZ, maxZ, 52 do
-		for _,side in ipairs({-1,1}) do
-			local x = side * 164
-			local h = 34 + ((math.floor((z-minZ)/52) % 4) * 7)
-			rock(world, Vector3.new(x, h/2-1, z), Vector3.new(26, h, 38), Color3.fromRGB(91,82,74))
-			rock(world, Vector3.new(x-side*13, h*0.42, z+14), Vector3.new(24,h*0.72,30), Color3.fromRGB(105,94,82))
-			tree(world, Vector3.new(x-side*24,1,z-8), Color3.fromRGB(57,117,67), 1.0)
+	-- Organic terrain shell hides the rectangular playfield and gives modern depth/shadows.
+	for z = minZ - 10, maxZ + 10, 72 do
+		for _, side in ipairs({-1, 1}) do
+			local x = side * 184
+			local variant = math.floor((z - minZ) / 72) % 4
+			local radius = 32 + variant * 4
+			Terrain:FillBall(Vector3.new(x, 24 + variant * 3, z), radius, Enum.Material.Rock)
+			Terrain:FillBall(Vector3.new(x - side * 12, 42 + variant * 2, z + 18), radius * 0.72, Enum.Material.Rock)
+			Terrain:FillBall(Vector3.new(x - side * 19, 56 + variant, z - 12), radius * 0.45, Enum.Material.Grass)
+
+			-- Foreground rocks and trees break the terrain silhouette.
+			if variant % 2 == 0 then
+				rock(world, Vector3.new(side * 153, 8, z + 10), Vector3.new(16, 16, 19), Color3.fromRGB(96, 87, 76))
+				tree(world, Vector3.new(side * 145, 1, z - 20), Color3.fromRGB(58, 119, 67), 1.0)
+			end
 		end
 	end
-	for x=-155,155,42 do
-		rock(world,Vector3.new(x,23,minZ),Vector3.new(42,46,24),Color3.fromRGB(92,83,75))
-		rock(world,Vector3.new(x,23,maxZ),Vector3.new(42,46,24),Color3.fromRGB(92,83,75))
+
+	for x = -150, 150, 45 do
+		Terrain:FillBall(Vector3.new(x, 27, minZ - 8), 34, Enum.Material.Rock)
+		Terrain:FillBall(Vector3.new(x, 27, maxZ + 8), 34, Enum.Material.Rock)
+	end
+end
+
+local function addWorldTerrain(worldConfig)
+	local z = worldConfig.CenterZ
+	local key = worldConfig.Key
+
+	if key == "Naruto" then
+		for _, side in ipairs({-1,1}) do
+			for dz = -90, 90, 55 do
+				Terrain:FillBall(Vector3.new(side * 142, 10, z + dz), 23, Enum.Material.Grass)
+			end
+		end
+	elseif key == "OnePiece" then
+		for _, side in ipairs({-1,1}) do
+			for dz = -88, 88, 44 do
+				Terrain:FillBall(Vector3.new(side * 138, 2, z + dz), 19, Enum.Material.Sand)
+			end
+		end
+	elseif key == "DragonBall" then
+		for _, side in ipairs({-1,1}) do
+			for dz = -90, 90, 48 do
+				Terrain:FillBall(Vector3.new(side * 132, 12 + ((dz + 90) % 3) * 4, z + dz), 22, Enum.Material.Sandstone)
+			end
+		end
+	elseif key == "DemonSlayer" then
+		for _, side in ipairs({-1,1}) do
+			for dz = -90, 90, 42 do
+				Terrain:FillBall(Vector3.new(side * 136, 8, z + dz), 21, Enum.Material.Grass)
+			end
+		end
+	elseif key == "JJK" then
+		for _, side in ipairs({-1,1}) do
+			Terrain:FillBlock(CFrame.new(side * 151, 5, z), Vector3.new(18, 12, 220), Enum.Material.Rock)
+		end
+	elseif key == "Bleach" then
+		for _, side in ipairs({-1,1}) do
+			for dz = -85, 85, 55 do
+				Terrain:FillBall(Vector3.new(side * 142, 7, z + dz), 18, Enum.Material.Rock)
+			end
+		end
+	elseif key == "AOT" then
+		for _, side in ipairs({-1,1}) do
+			for dz = -92, 92, 46 do
+				Terrain:FillBall(Vector3.new(side * 140, 9, z + dz), 23, Enum.Material.Grass)
+			end
+		end
 	end
 end
 
@@ -724,7 +780,7 @@ local function configureLighting()
 	Lighting.EnvironmentDiffuseScale = 0.55
 	Lighting.EnvironmentSpecularScale = 0.75
 
-	for _, name in ipairs({"AnimeBloom", "AnimeColor", "AnimeAtmosphere", "AnimeSunRays"}) do
+	for _, name in ipairs({"AnimeBloom", "AnimeColor", "AnimeAtmosphere", "AnimeSunRays", "AnimeDOF"}) do
 		local old = Lighting:FindFirstChild(name)
 		if old then old:Destroy() end
 	end
@@ -755,9 +811,26 @@ local function configureLighting()
 
 	local rays = Instance.new("SunRaysEffect")
 	rays.Name = "AnimeSunRays"
-	rays.Intensity = 0.04
+	rays.Intensity = 0.035
 	rays.Spread = 0.7
 	rays.Parent = Lighting
+
+	local dof = Instance.new("DepthOfFieldEffect")
+	dof.Name = "AnimeDOF"
+	dof.FocusDistance = 85
+	dof.InFocusRadius = 70
+	dof.NearIntensity = 0
+	dof.FarIntensity = 0.07
+	dof.Parent = Lighting
+
+	local oldClouds = Terrain:FindFirstChild("AnimeClouds")
+	if oldClouds then oldClouds:Destroy() end
+	local clouds = Instance.new("Clouds")
+	clouds.Name = "AnimeClouds"
+	clouds.Cover = 0.22
+	clouds.Density = 0.28
+	clouds.Color = Color3.fromRGB(255, 255, 255)
+	clouds.Parent = Terrain
 end
 
 function WorldBuilder.Build(Config)
@@ -765,6 +838,7 @@ function WorldBuilder.Build(Config)
 	if old then old:Destroy() end
 	local baseplate = workspace:FindFirstChild("Baseplate")
 	if baseplate then baseplate:Destroy() end
+	Terrain:Clear()
 
 	configureLighting()
 
@@ -854,6 +928,8 @@ function WorldBuilder.Build(Config)
 
 		local road = part(world, worldConfig.Key .. "_Road", Vector3.new(36, 0.5, 236), CFrame.new(0, 1.2, z), worldConfig.Key == "Bleach" and Color3.fromRGB(245,245,248) or Color3.fromRGB(207, 199, 183), worldConfig.Key == "JJK" and Enum.Material.Concrete or Enum.Material.Concrete)
 		road.TopSurface = Enum.SurfaceType.Smooth
+
+		addWorldTerrain(worldConfig)
 
 		local gateZ = z - 126
 		table.insert(gates, portalGate(world, gateZ, worldConfig, index))
