@@ -828,6 +828,9 @@ local function configureLighting()
 	Lighting.ClockTime = 13.2
 	Lighting.Brightness = 2.8
 	Lighting.ExposureCompensation = 0.02
+	Lighting.GlobalShadows = true
+	Lighting.ShadowSoftness = 0.35
+	Lighting.GeographicLatitude = 35
 	Lighting.Ambient = Color3.fromRGB(118, 124, 138)
 	Lighting.OutdoorAmbient = Color3.fromRGB(172, 178, 190)
 	Lighting.EnvironmentDiffuseScale = 0.55
