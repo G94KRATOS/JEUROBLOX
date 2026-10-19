@@ -5,6 +5,7 @@
 
     "ReplicatedStorage": {
       "Shared": {
+        "$className": "Folder",
         "GameConfig": {
           "$path": "src/shared/GameConfig.lua"
         }
