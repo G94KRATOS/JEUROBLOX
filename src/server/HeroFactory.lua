@@ -210,8 +210,8 @@ function HeroFactory.Create(hero, rarityColor, scale)
 	-- Layered body proportions instead of a single block.
 	part(model, "LegL", Vector3.new(1.15 * scale, 3.0 * scale, 1.25 * scale), CFrame.new(-0.8 * scale, 1.8 * scale, 0), style.Secondary, Enum.Material.Fabric)
 	part(model, "LegR", Vector3.new(1.15 * scale, 3.0 * scale, 1.25 * scale), CFrame.new(0.8 * scale, 1.8 * scale, 0), style.Secondary, Enum.Material.Fabric)
-	part(model, "BootL", Vector3.new(1.3 * scale, 0.75 * scale, 1.7 * scale), CFrame.new(-0.8 * scale, 0.45 * scale, -0.2 * scale), Color3.fromRGB(36, 38, 44), Enum.Material.Leather)
-	part(model, "BootR", Vector3.new(1.3 * scale, 0.75 * scale, 1.7 * scale), CFrame.new(0.8 * scale, 0.45 * scale, -0.2 * scale), Color3.fromRGB(36, 38, 44), Enum.Material.Leather)
+	part(model, "BootL", Vector3.new(1.3 * scale, 0.75 * scale, 1.7 * scale), CFrame.new(-0.8 * scale, 0.45 * scale, -0.2 * scale), Color3.fromRGB(36, 38, 44), Enum.Material.Fabric)
+	part(model, "BootR", Vector3.new(1.3 * scale, 0.75 * scale, 1.7 * scale), CFrame.new(0.8 * scale, 0.45 * scale, -0.2 * scale), Color3.fromRGB(36, 38, 44), Enum.Material.Fabric)
 
 	part(model, "Torso", Vector3.new(3.9 * scale, 3.8 * scale, 2.0 * scale), CFrame.new(0, 4.8 * scale, 0), style.Body, Enum.Material.Fabric)
 	part(model, "Vest", Vector3.new(3.45 * scale, 2.5 * scale, 2.18 * scale), CFrame.new(0, 5.0 * scale, 0), style.Secondary, Enum.Material.Fabric, 0.05)
