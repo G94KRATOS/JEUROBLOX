@@ -4,7 +4,7 @@ local DataStoreService = game:GetService("DataStoreService")
 local HttpService = game:GetService("HttpService")
 
 local Config = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("GameConfig"))
-local WorldBuilder = require(script:WaitForChild("WorldBuilder"))
+local WorldBuilder = require(script.Parent:WaitForChild("WorldBuilder"))
 
 local remotes = ReplicatedStorage:FindFirstChild("AnimeEggRemotes") or Instance.new("Folder")
 remotes.Name = "AnimeEggRemotes"
@@ -27,7 +27,40 @@ requestState.Name = "RequestState"
 requestState.Parent = remotes
 
 local store = DataStoreService:GetDataStore("AnimeEggHeist_Naruto_V2")
-local built = WorldBuilder.Build(Config)
+local okBuild, builtOrError = pcall(WorldBuilder.Build, Config)
+if not okBuild then
+	warn("[AnimeEggHeist] WorldBuilder crashed:", builtOrError)
+
+	local debugPlatform = Instance.new("Part")
+	debugPlatform.Name = "WORLD_BUILD_ERROR"
+	debugPlatform.Anchored = true
+	debugPlatform.Size = Vector3.new(120, 4, 120)
+	debugPlatform.Position = Vector3.new(0, 0, 0)
+	debugPlatform.Color = Color3.fromRGB(255, 70, 70)
+	debugPlatform.Material = Enum.Material.Neon
+	debugPlatform.Parent = workspace
+
+	local board = Instance.new("BillboardGui")
+	board.Size = UDim2.fromOffset(700, 180)
+	board.StudsOffset = Vector3.new(0, 10, 0)
+	board.AlwaysOnTop = true
+	board.Parent = debugPlatform
+
+	local message = Instance.new("TextLabel")
+	message.Size = UDim2.fromScale(1, 1)
+	message.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+	message.BackgroundTransparency = 0.1
+	message.TextColor3 = Color3.new(1, 1, 1)
+	message.TextWrapped = true
+	message.TextScaled = true
+	message.Font = Enum.Font.GothamBold
+	message.Text = "WORLD BUILDER ERROR\n" .. tostring(builtOrError)
+	message.Parent = board
+
+	error(builtOrError)
+end
+
+local built = builtOrError
 local bases = built.Bases
 local eggs = built.Eggs
 
