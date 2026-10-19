@@ -176,6 +176,16 @@ local function updatePlayerAttributes(player)
 	player:SetAttribute("CarryingName", data.Carry and data.Carry.Name or "")
 	player:SetAttribute("CarryingRarity", data.Carry and data.Carry.Rarity or "")
 	player:SetAttribute("CarryingWorld", data.Carry and data.Carry.WorldKey or "")
+
+	local base = data.BaseIndex and bases[data.BaseIndex]
+	if base and base.Owner == player then
+		if base.IncomeLabel then
+			base.IncomeLabel.Text = "$" .. tostring(computeIncome(player)) .. "/s"
+		end
+		if base.TrainingLabel then
+			base.TrainingLabel.Text = "SPEED LV." .. tostring(data.TrainingLevel)
+		end
+	end
 end
 
 local function updateWalkSpeed(player)
@@ -386,6 +396,8 @@ local function releaseBase(player)
 
 	base.Owner = nil
 	base.SignLabel.Text = "BASE LIBRE"
+	if base.IncomeLabel then base.IncomeLabel.Text = "$0/s" end
+	if base.TrainingLabel then base.TrainingLabel.Text = "SPEED LV.1" end
 	base.IsShielded = false
 	base.ShieldReadyAt = 0
 	setShieldVisual(base, false)
