@@ -147,8 +147,7 @@ end
 local function streetLamp(parent, pos, color)
 	local dark = Color3.fromRGB(60, 52, 47)
 	cylinder(parent, "LampBase", 2.4, 0.7, CFrame.new(pos + Vector3.new(0,0.4,0)), dark, Enum.Material.Metal)
-	local pole = cylinder(parent, "LampPost", 0.75, 8.6, CFrame.new(pos + Vector3.new(0,4.8,0)) * CFrame.Angles(0,0,math.rad(90)), dark, Enum.Material.Metal)
-	pole.CFrame = CFrame.new(pos + Vector3.new(0,4.8,0))
+	cylinder(parent, "LampPost", 0.75, 8.6, CFrame.new(pos + Vector3.new(0,4.8,0)), dark, Enum.Material.Metal)
 	part(parent, "LampArm", Vector3.new(3.4,0.55,0.55), CFrame.new(pos + Vector3.new(1.4,8.7,0)), dark, Enum.Material.Metal)
 	local bulb = ball(parent, "LampBulb", 1.8, pos + Vector3.new(2.8,8.2,0), color, Enum.Material.Glass, 0.08)
 	pointLight(bulb, color, 15, 0.9)
@@ -445,7 +444,7 @@ local function basicHouse(parent, pos, accent, scale)
 	local roof = Color3.fromRGB(67, 60, 62)
 
 	part(parent, "HouseBase", Vector3.new(w + 3, 1.0, d + 3), CFrame.new(pos + Vector3.new(0,0.5,0)), Color3.fromRGB(119, 108, 92), Enum.Material.Concrete)
-	part(parent, "HouseBody", Vector3.new(w, h, d), CFrame.new(pos + Vector3.new(0,h/2 + 1,0)), wall, Enum.Material.Plaster)
+	part(parent, "HouseBody", Vector3.new(w, h, d), CFrame.new(pos + Vector3.new(0,h/2 + 1,0)), wall, Enum.Material.SmoothPlastic)
 
 	-- Timber framing adds detail without external assets.
 	for _, x in ipairs({-w/2 + 1.2, w/2 - 1.2}) do
