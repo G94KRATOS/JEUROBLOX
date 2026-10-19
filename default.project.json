@@ -5,30 +5,20 @@
 
     "ReplicatedStorage": {
       "Shared": {
-        "$className": "Folder",
-        "GameConfig": {
-          "$className": "ModuleScript",
-          "$path": "src/shared/GameConfig.lua"
-        }
+        "$path": "src/shared"
       }
     },
 
     "ServerScriptService": {
-      "GameServer": {
-        "$className": "Script",
-        "$path": "src/server/init.server.lua"
-      },
-      "WorldBuilder": {
-        "$className": "ModuleScript",
-        "$path": "src/server/WorldBuilder.lua"
+      "Server": {
+        "$path": "src/server"
       }
     },
 
     "StarterPlayer": {
       "StarterPlayerScripts": {
         "Client": {
-          "$className": "LocalScript",
-          "$path": "src/client/init.client.lua"
+          "$path": "src/client"
         }
       }
     },
