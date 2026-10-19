@@ -137,7 +137,7 @@ end
 
 -- Mission HUD
 local mission = glassPanel(gui, UDim2.fromOffset(540, 76), UDim2.new(0.5, 0, 0, 16), Vector2.new(0.5,0))
-local missionTitle = label(mission, "VOLE UN OEUF !", UDim2.new(1,-28,0,32), UDim2.fromOffset(14,9), 20, C.White, Enum.Font.GothamBlack, Enum.TextXAlignment.Center)
+local missionTitle = label(mission, "VOLE UNE CAPSULE !", UDim2.new(1,-28,0,32), UDim2.fromOffset(14,9), 20, C.White, Enum.Font.GothamBlack, Enum.TextXAlignment.Center)
 local worldChip = label(mission, "HUB CENTRAL", UDim2.new(1,-28,0,22), UDim2.fromOffset(14,40), 12, C.Green, Enum.Font.GothamBold, Enum.TextXAlignment.Center)
 local missionAccent = Instance.new("Frame")
 missionAccent.Size = UDim2.new(1,-22,0,4)
@@ -193,7 +193,7 @@ local carryCard = glassPanel(gui, UDim2.fromOffset(430, 72), UDim2.new(0.5,0,1,-
 carryCard.Visible = false
 local carryStroke = stroke(carryCard, C.Purple, 2.5, 0.05)
 local carryName = label(carryCard, "", UDim2.new(1,-20,0,30), UDim2.fromOffset(10,7), 17, C.Purple, Enum.Font.GothamBlack, Enum.TextXAlignment.Center)
-local carryHint = label(carryCard, "RETOURNE A TA BASE !", UDim2.new(1,-20,0,24), UDim2.fromOffset(10,39), 12, C.Green, Enum.Font.GothamBlack, Enum.TextXAlignment.Center)
+local carryHint = label(carryCard, "LE HEROS TE SUIT • RETOURNE A TA BASE !", UDim2.new(1,-20,0,24), UDim2.fromOffset(10,39), 12, C.Green, Enum.Font.GothamBlack, Enum.TextXAlignment.Center)
 
 -- Toasts
 local toastHolder = Instance.new("Frame")
@@ -550,12 +550,12 @@ local function refreshHUD()
 	else
 		carryCard.Visible=false
 		if currentWorld then
-			missionTitle.Text="VOLE UN OEUF !"
+			missionTitle.Text="VOLE UNE CAPSULE !"
 			worldChip.Text=currentWorld.DisplayName.."  •  "..tostring(currentWorld.RequiredSpeed).." SPEED"
 			worldChip.TextColor3=currentWorld.Accent
 			missionAccent.BackgroundColor3=currentWorld.Accent
 		else
-			missionTitle.Text="CHOISIS UN MONDE • VOLE UN OEUF"
+			missionTitle.Text="CHOISIS UN MONDE • VOLE UNE CAPSULE"
 			worldChip.Text="HUB CENTRAL"
 			worldChip.TextColor3=C.Green
 			missionAccent.BackgroundColor3=C.Green
@@ -565,7 +565,7 @@ end
 
 coins.Changed:Connect(refreshHUD)
 speedStat.Changed:Connect(refreshHUD)
-for _,attr in ipairs({"IncomePerSecond","HeroCount","BaseLevel","TrainingLevel","CarryingName","CarryingRarity","BaseIndex","ShieldActive"}) do
+for _,attr in ipairs({"IncomePerSecond","HeroCount","BaseLevel","TrainingLevel","CarryingName","CarryingRarity","CarryingWorld","BaseIndex","ShieldActive"}) do
 	player:GetAttributeChangedSignal(attr):Connect(refreshHUD)
 end
 
@@ -601,5 +601,5 @@ end)
 
 refreshHUD()
 task.delay(1.2,function()
-	toast("Explore le hub, augmente ta Speed et vole les oeufs des 7 mondes.", "Success")
+	toast("Gagne de la Speed, vole une capsule et ramène le héros qui te suit.", "Success")
 end)
