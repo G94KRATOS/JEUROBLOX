@@ -417,6 +417,49 @@ local function basicHouse(parent, pos, accent, scale)
 	part(parent, "Door", Vector3.new(5, 8, 0.7), CFrame.new(pos + Vector3.new(0, 4, -d / 2 - 0.4)), Color3.fromRGB(78, 52, 39), Enum.Material.Wood)
 end
 
+local function giantGuardian(parent, pos, name, bodyColor, accent, hairColor, feature, scale)
+	scale = scale or 1
+	local model = Instance.new("Model")
+	model.Name = name
+	model.Parent = parent
+
+	local skin = Color3.fromRGB(236, 188, 150)
+	local dark = Color3.fromRGB(42, 45, 52)
+
+	part(model, "LegL", Vector3.new(7*scale, 24*scale, 7*scale), CFrame.new(pos + Vector3.new(-6*scale, 12*scale, 0)), dark, Enum.Material.SmoothPlastic)
+	part(model, "LegR", Vector3.new(7*scale, 24*scale, 7*scale), CFrame.new(pos + Vector3.new(6*scale, 12*scale, 0)), dark, Enum.Material.SmoothPlastic)
+	part(model, "Torso", Vector3.new(25*scale, 28*scale, 12*scale), CFrame.new(pos + Vector3.new(0, 38*scale, 0)), bodyColor, Enum.Material.Fabric)
+	part(model, "ChestAccent", Vector3.new(19*scale, 8*scale, 12.5*scale), CFrame.new(pos + Vector3.new(0, 39*scale, -0.2)), accent, Enum.Material.Fabric, 0.08)
+
+	for _,x in ipairs({-17,17}) do
+		part(model, x < 0 and "ArmL" or "ArmR", Vector3.new(6*scale, 25*scale, 6*scale), CFrame.new(pos + Vector3.new(x*scale, 38*scale, 0)) * CFrame.Angles(0,0,math.rad(x<0 and -8 or 8)), skin, Enum.Material.SmoothPlastic)
+	end
+
+	ball(model, "Head", 16*scale, CFrame.new(pos + Vector3.new(0, 61*scale, 0)), skin, Enum.Material.SmoothPlastic)
+	ball(model, "Hair", 17*scale, CFrame.new(pos + Vector3.new(0, 67*scale, 0.5*scale)), hairColor, Enum.Material.SmoothPlastic)
+
+	if feature == "Hat" then
+		cylinder(model, "HatBrim", 25*scale, 2*scale, CFrame.new(pos + Vector3.new(0, 70*scale, 0)), Color3.fromRGB(222,177,78), Enum.Material.Fabric)
+		cylinder(model, "HatCrown", 15*scale, 7*scale, CFrame.new(pos + Vector3.new(0, 74*scale, 0)), Color3.fromRGB(222,177,78), Enum.Material.Fabric)
+	elseif feature == "Spikes" then
+		for i=0,7 do
+			local a=math.rad(i*45)
+			wedge(model,"HairSpike",Vector3.new(5*scale,12*scale,5*scale),CFrame.new(pos+Vector3.new(math.cos(a)*7*scale,73*scale,math.sin(a)*7*scale))*CFrame.Angles(0,-a,math.rad(-20)),hairColor,Enum.Material.SmoothPlastic)
+		end
+	elseif feature == "Sword" then
+		part(model,"GiantBlade",Vector3.new(3*scale,42*scale,1.2*scale),CFrame.new(pos+Vector3.new(22*scale,35*scale,0))*CFrame.Angles(0,0,math.rad(-12)),Color3.fromRGB(210,220,230),Enum.Material.Metal)
+		part(model,"GiantHandle",Vector3.new(5*scale,10*scale,3*scale),CFrame.new(pos+Vector3.new(26*scale,12*scale,0)),dark,Enum.Material.Wood)
+	elseif feature == "Blindfold" then
+		part(model,"Blindfold",Vector3.new(17*scale,4*scale,1.6*scale),CFrame.new(pos+Vector3.new(0,62*scale,-8*scale)),Color3.fromRGB(18,20,25),Enum.Material.Fabric)
+	end
+
+	cylinder(model,"GuardianAura",34*scale,0.55*scale,CFrame.new(pos+Vector3.new(0,0.7*scale,0)),accent,Enum.Material.Neon,0.38)
+	addHighlight(model, accent)
+
+	return model
+end
+
+
 local function ninjaWorld(parent, world)
 	local z=world.CenterZ
 	local wood=Color3.fromRGB(145,84,45)
@@ -517,6 +560,8 @@ local function pirateWorld(parent, world)
 		local pz = z - 75 + math.floor(i / 5) * 24
 		cylinder(parent, "Barrel", 4, 5, CFrame.new(px, 3, pz), Color3.fromRGB(112, 73, 44), Enum.Material.Wood)
 	end
+
+	giantGuardian(parent, Vector3.new(94,1,z+78), "PirateGuardian", Color3.fromRGB(194,59,48), world.Accent, Color3.fromRGB(45,38,34), "Hat", 0.92)
 end
 
 local function dragonWorld(parent, world)
@@ -543,6 +588,8 @@ local function dragonWorld(parent, world)
 		local orb = ball(parent, "EnergyOrb", 8, Vector3.new(x, 12, z - 62), x == 0 and Color3.fromRGB(130, 216, 255) or world.Accent, Enum.Material.Neon, 0.05)
 		pointLight(orb, orb.Color, 22, 1.6)
 	end
+
+	giantGuardian(parent, Vector3.new(101,1,z+77), "SaiyanGuardian", Color3.fromRGB(226,109,37), world.Accent, Color3.fromRGB(245,204,62), "Spikes", 0.9)
 end
 
 local function demonWorld(parent, world)
@@ -567,6 +614,8 @@ local function demonWorld(parent, world)
 	local moon = ball(parent, "CrimsonMoon", 34, Vector3.new(-105, 45, z + 80), Color3.fromRGB(255, 100, 100), Enum.Material.Neon, 0.12)
 	moon.CanCollide = false
 	pointLight(moon, moon.Color, 60, 1.8)
+
+	giantGuardian(parent, Vector3.new(-92,1,z+75), "SlayerGuardian", Color3.fromRGB(48,91,76), world.Accent, Color3.fromRGB(55,44,43), "Sword", 0.86)
 end
 
 local function cursedWorld(parent, world)
@@ -586,6 +635,8 @@ local function cursedWorld(parent, world)
 	part(parent, "JujutsuSchool", Vector3.new(70, 22, 46), CFrame.new(0, 12, z + 72), Color3.fromRGB(56, 60, 69), Enum.Material.Brick)
 	part(parent, "SchoolRoof", Vector3.new(78, 3, 54), CFrame.new(0, 24, z + 72), Color3.fromRGB(34, 37, 44), Enum.Material.Slate)
 	part(parent, "SchoolGateGlow", Vector3.new(22, 0.7, 1), CFrame.new(0, 12, z + 48.5), world.Accent, Enum.Material.Neon)
+
+	giantGuardian(parent, Vector3.new(-94,1,z+74), "CursedGuardian", Color3.fromRGB(51,54,68), world.Accent, Color3.fromRGB(220,225,232), "Blindfold", 0.9)
 end
 
 local function soulWorld(parent, world)
@@ -604,6 +655,8 @@ local function soulWorld(parent, world)
 			crystal(parent, Vector3.new(x, 1, z + dz), Color3.fromRGB(98, 221, 255), 0.9)
 		end
 	end
+
+	giantGuardian(parent, Vector3.new(96,1,z+76), "SoulGuardian", Color3.fromRGB(34,36,41), world.Accent, Color3.fromRGB(219,110,44), "Sword", 0.9)
 end
 
 local function titanWorld(parent, world)
