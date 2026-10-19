@@ -1,10 +1,12 @@
 local Config = {}
 
-Config.GameName = "Anime Egg Heist"
+Config.GameName = "Anime Capsule Heist"
 Config.StartingCoins = 250
 Config.StartingSpeed = 0
 Config.BaseCount = 8
 Config.MaxHeroes = 12
+Config.MaxPlayers = 8
+Config.CapsuleStealHold = 0.65
 
 Config.Rarities = {
 	Common = { Color = Color3.fromRGB(210, 214, 222), Income = 5 },
@@ -18,6 +20,7 @@ Config.Rarities = {
 Config.Worlds = {
 	{
 		Key = "Naruto",
+		IncomeMultiplier = 1,
 		Name = "Naruto Shippuden",
 		DisplayName = "SHINOBI WORLD",
 		RequiredSpeed = 0,
@@ -42,6 +45,7 @@ Config.Worlds = {
 	},
 	{
 		Key = "OnePiece",
+		IncomeMultiplier = 2.5,
 		Name = "One Piece",
 		DisplayName = "PIRATE SEAS",
 		RequiredSpeed = 100,
@@ -64,6 +68,7 @@ Config.Worlds = {
 	},
 	{
 		Key = "DragonBall",
+		IncomeMultiplier = 6,
 		Name = "Dragon Ball",
 		DisplayName = "SAIYAN WASTES",
 		RequiredSpeed = 350,
@@ -85,6 +90,7 @@ Config.Worlds = {
 	},
 	{
 		Key = "DemonSlayer",
+		IncomeMultiplier = 15,
 		Name = "Demon Slayer",
 		DisplayName = "DEMON FOREST",
 		RequiredSpeed = 750,
@@ -105,6 +111,7 @@ Config.Worlds = {
 	},
 	{
 		Key = "JJK",
+		IncomeMultiplier = 35,
 		Name = "Jujutsu Kaisen",
 		DisplayName = "CURSED CITY",
 		RequiredSpeed = 1500,
@@ -125,6 +132,7 @@ Config.Worlds = {
 	},
 	{
 		Key = "Bleach",
+		IncomeMultiplier = 80,
 		Name = "Bleach",
 		DisplayName = "SOUL CITADEL",
 		RequiredSpeed = 3000,
@@ -145,6 +153,7 @@ Config.Worlds = {
 	},
 	{
 		Key = "AOT",
+		IncomeMultiplier = 180,
 		Name = "Attack on Titan",
 		DisplayName = "TITAN DISTRICT",
 		RequiredSpeed = 6000,
@@ -196,6 +205,13 @@ end
 
 function Config.GetIncomeMultiplier(baseLevel)
 	return 1 + ((math.max(1, baseLevel) - 1) * 0.25)
+end
+
+function Config.GetHeroIncome(hero)
+	local rarity = Config.Rarities[hero.Rarity] or Config.Rarities.Common
+	local world = Config.GetWorld(hero.WorldKey) or Config.NarutoWorld
+	local worldMultiplier = world.IncomeMultiplier or 1
+	return math.max(1, math.floor(rarity.Income * worldMultiplier))
 end
 
 function Config.GetTrainingGain(trainingLevel)
