@@ -1,123 +1,57 @@
 local Config = {}
 
-Config.GameName = "ANIME EGG HEIST"
-Config.StartingCoins = 300
+Config.GameName = "Anime Egg Heist"
+Config.StartingCoins = 250
 Config.StartingSpeed = 0
-Config.MaxPets = 12
-Config.BaseCount = 7
+Config.BaseCount = 8
+Config.MaxHeroes = 12
 
 Config.Rarities = {
-	Common = {
-		Color = Color3.fromRGB(175, 184, 197),
-		Income = 4,
-	},
-	Rare = {
-		Color = Color3.fromRGB(76, 170, 255),
-		Income = 10,
-	},
-	Epic = {
-		Color = Color3.fromRGB(177, 86, 255),
-		Income = 28,
-	},
-	Legendary = {
-		Color = Color3.fromRGB(255, 188, 55),
-		Income = 85,
-	},
-	Mythic = {
-		Color = Color3.fromRGB(255, 75, 116),
-		Income = 240,
-	},
-	Secret = {
-		Color = Color3.fromRGB(82, 255, 213),
-		Income = 750,
+	Common = { Color = Color3.fromRGB(210, 214, 222), Income = 5 },
+	Rare = { Color = Color3.fromRGB(68, 164, 255), Income = 15 },
+	Epic = { Color = Color3.fromRGB(176, 78, 255), Income = 50 },
+	Legendary = { Color = Color3.fromRGB(255, 185, 52), Income = 150 },
+	Mythic = { Color = Color3.fromRGB(255, 71, 112), Income = 500 },
+	Secret = { Color = Color3.fromRGB(60, 255, 204), Income = 2200 },
+}
+
+Config.NarutoWorld = {
+	Name = "Naruto Shippuden",
+	DisplayName = "SHINOBI WORLD",
+	RequiredSpeed = 0,
+	EggRespawn = 8,
+	Heroes = {
+		{ Name = "Iruka", Rarity = "Common", Weight = 22 },
+		{ Name = "Kiba", Rarity = "Common", Weight = 22 },
+		{ Name = "Shino", Rarity = "Common", Weight = 18 },
+		{ Name = "Rock Lee", Rarity = "Rare", Weight = 13 },
+		{ Name = "Neji", Rarity = "Rare", Weight = 10 },
+		{ Name = "Temari", Rarity = "Rare", Weight = 7 },
+		{ Name = "Kakashi", Rarity = "Epic", Weight = 3.5 },
+		{ Name = "Gaara", Rarity = "Epic", Weight = 2.5 },
+		{ Name = "Itachi", Rarity = "Legendary", Weight = 1.1 },
+		{ Name = "Naruto Sage", Rarity = "Legendary", Weight = 0.6 },
+		{ Name = "Madara", Rarity = "Mythic", Weight = 0.22 },
+		{ Name = "Six Paths Naruto", Rarity = "Secret", Weight = 0.08 },
 	},
 }
 
-Config.PetNames = {
-	Common = {"Leaf Rookie", "Spirit Scout", "Street Ninja"},
-	Rare = {"Thunder Ronin", "Crimson Mage", "Aqua Fighter"},
-	Epic = {"Void Samurai", "Frost Shinobi", "Phantom Archer"},
-	Legendary = {"Sun Emperor", "Storm Captain", "Golden Blade"},
-	Mythic = {"Dragon Sage", "Celestial Reaper", "Demon Prince"},
-	Secret = {"Eclipse King", "Infinity Hero", "Cosmic Sovereign"},
-}
-
-Config.Zones = {
-	{
-		Name = "Blossom Village",
-		Z = 145,
-		RequiredSpeed = 0,
-		FloorColor = Color3.fromRGB(94, 164, 92),
-		Accent = Color3.fromRGB(255, 129, 188),
-		SkyColor = Color3.fromRGB(255, 189, 220),
-		Rarities = {
-			{Rarity = "Common", Weight = 72},
-			{Rarity = "Rare", Weight = 24},
-			{Rarity = "Epic", Weight = 4},
-		},
-	},
-	{
-		Name = "Sunscorch Desert",
-		Z = 335,
-		RequiredSpeed = 75,
-		FloorColor = Color3.fromRGB(194, 145, 76),
-		Accent = Color3.fromRGB(255, 192, 70),
-		SkyColor = Color3.fromRGB(255, 218, 159),
-		Rarities = {
-			{Rarity = "Common", Weight = 36},
-			{Rarity = "Rare", Weight = 46},
-			{Rarity = "Epic", Weight = 16},
-			{Rarity = "Legendary", Weight = 2},
-		},
-	},
-	{
-		Name = "Frost Kingdom",
-		Z = 525,
-		RequiredSpeed = 250,
-		FloorColor = Color3.fromRGB(126, 177, 202),
-		Accent = Color3.fromRGB(107, 225, 255),
-		SkyColor = Color3.fromRGB(191, 238, 255),
-		Rarities = {
-			{Rarity = "Rare", Weight = 43},
-			{Rarity = "Epic", Weight = 43},
-			{Rarity = "Legendary", Weight = 13},
-			{Rarity = "Mythic", Weight = 1},
-		},
-	},
-	{
-		Name = "Inferno Citadel",
-		Z = 715,
-		RequiredSpeed = 700,
-		FloorColor = Color3.fromRGB(75, 61, 65),
-		Accent = Color3.fromRGB(255, 92, 44),
-		SkyColor = Color3.fromRGB(218, 89, 64),
-		Rarities = {
-			{Rarity = "Epic", Weight = 45},
-			{Rarity = "Legendary", Weight = 43},
-			{Rarity = "Mythic", Weight = 11},
-			{Rarity = "Secret", Weight = 1},
-		},
-	},
-	{
-		Name = "Celestial Rift",
-		Z = 905,
-		RequiredSpeed = 1800,
-		FloorColor = Color3.fromRGB(42, 37, 79),
-		Accent = Color3.fromRGB(143, 104, 255),
-		SkyColor = Color3.fromRGB(118, 96, 210),
-		Rarities = {
-			{Rarity = "Legendary", Weight = 58},
-			{Rarity = "Mythic", Weight = 37},
-			{Rarity = "Secret", Weight = 5},
-		},
-	},
+Config.FutureWorlds = {
+	{ Name = "Pirate World", InspiredBy = "One Piece", RequiredSpeed = 100 },
+	{ Name = "Energy World", InspiredBy = "Dragon Ball", RequiredSpeed = 350 },
+	{ Name = "Demon Blade World", InspiredBy = "Demon Slayer", RequiredSpeed = 750 },
+	{ Name = "Cursed World", InspiredBy = "Jujutsu Kaisen", RequiredSpeed = 1500 },
+	{ Name = "Soul World", InspiredBy = "Bleach", RequiredSpeed = 3000 },
+	{ Name = "Titan World", InspiredBy = "Attack on Titan", RequiredSpeed = 6000 },
 }
 
 Config.BaseUpgradeBaseCost = 600
 Config.TrainingUpgradeBaseCost = 450
+Config.ShieldDuration = 20
+Config.ShieldCooldown = 60
 
 function Config.GetBaseUpgradeCost(level)
-	return math.floor(Config.BaseUpgradeBaseCost * (1.85 ^ math.max(0, level - 1)))
+	return math.floor(Config.BaseUpgradeBaseCost * (1.8 ^ math.max(0, level - 1)))
 end
 
 function Config.GetTrainingUpgradeCost(level)
@@ -125,11 +59,34 @@ function Config.GetTrainingUpgradeCost(level)
 end
 
 function Config.GetIncomeMultiplier(baseLevel)
-	return 1 + ((baseLevel - 1) * 0.25)
+	return 1 + ((math.max(1, baseLevel) - 1) * 0.25)
 end
 
 function Config.GetTrainingGain(trainingLevel)
-	return math.max(1, trainingLevel)
+	return math.max(1, math.floor(1.6 ^ (math.max(1, trainingLevel) - 1)))
+end
+
+function Config.RollNarutoHero(random)
+	random = random or Random.new()
+	local total = 0
+	for _, hero in ipairs(Config.NarutoWorld.Heroes) do
+		total += hero.Weight
+	end
+
+	local roll = random:NextNumber(0, total)
+	local cursor = 0
+	for _, hero in ipairs(Config.NarutoWorld.Heroes) do
+		cursor += hero.Weight
+		if roll <= cursor then
+			return {
+				Name = hero.Name,
+				Rarity = hero.Rarity,
+			}
+		end
+	end
+
+	local fallback = Config.NarutoWorld.Heroes[1]
+	return { Name = fallback.Name, Rarity = fallback.Rarity }
 end
 
 return Config
