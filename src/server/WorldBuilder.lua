@@ -215,7 +215,7 @@ local function portalGate(parent, z, world, index)
 	local sign = part(gate, "WorldSign", Vector3.new(38, 8, 1), CFrame.new(0, 25, z - 5.6), Color3.fromRGB(246, 247, 250), Enum.Material.SmoothPlastic)
 	surfaceLabel(sign, Enum.NormalId.Front, world.DisplayName .. "\n" .. world.RequiredSpeed .. " SPEED", accent, Color3.fromRGB(245, 246, 249))
 
-	local trigger = part(gate, "GateTrigger", Vector3.new(45, 18, 2), CFrame.new(0, 9, z + 2), accent, Enum.Material.ForceField, world.RequiredSpeed == 0 and 1 or 0.74)
+	local trigger = part(gate, "GateTrigger", Vector3.new(320, 18, 6), CFrame.new(0, 9, z + 2), accent, Enum.Material.ForceField, 1)
 	trigger.CanCollide = false
 
 	for i = -2, 2 do
@@ -626,13 +626,16 @@ function WorldBuilder.Build(Config)
 	world.Name = "AnimeEggWorld"
 	world.Parent = workspace
 
+	-- Continuous rock underlay so there are no open gaps between themed worlds.
+	part(world, "WorldUnderlay", Vector3.new(320, 4, 2325), CFrame.new(0, -3, 825), Color3.fromRGB(74, 70, 65), Enum.Material.Rock)
+
 	local minZ = -340
 	local maxZ = 1995
 	decorateBoundary(world, minZ, maxZ)
 
 	-- Hub foundation and plaza.
 	local hubFloor = part(world, "HubFloor", Vector3.new(320, 4, 290), CFrame.new(0, -1, -185), Color3.fromRGB(83, 174, 83), Enum.Material.Grass)
-	local hubRoad = part(world, "HubRoad", Vector3.new(40, 0.6, 300), CFrame.new(0, 1.3, -180), Color3.fromRGB(216, 206, 183), Enum.Material.Pavement)
+	local hubRoad = part(world, "HubRoad", Vector3.new(40, 0.6, 300), CFrame.new(0, 1.3, -180), Color3.fromRGB(216, 206, 183), Enum.Material.Concrete)
 	local plaza = cylinder(world, "CentralPlaza", 105, 1.2, CFrame.new(0, 1.2, -235), Color3.fromRGB(201, 204, 210), Enum.Material.Concrete)
 	part(world, "PlazaRing", Vector3.new(110, 0.4, 110), CFrame.new(0, 1.1, -235), Color3.fromRGB(255, 255, 255), Enum.Material.SmoothPlastic, 1)
 
@@ -685,7 +688,7 @@ function WorldBuilder.Build(Config)
 		if worldConfig.Key == "Bleach" then floor.Material = Enum.Material.Marble end
 		if worldConfig.Key == "AOT" then floor.Material = Enum.Material.Cobblestone end
 
-		local road = part(world, worldConfig.Key .. "_Road", Vector3.new(36, 0.5, 236), CFrame.new(0, 1.2, z), worldConfig.Key == "Bleach" and Color3.fromRGB(245,245,248) or Color3.fromRGB(207, 199, 183), worldConfig.Key == "JJK" and Enum.Material.Asphalt or Enum.Material.Pavement)
+		local road = part(world, worldConfig.Key .. "_Road", Vector3.new(36, 0.5, 236), CFrame.new(0, 1.2, z), worldConfig.Key == "Bleach" and Color3.fromRGB(245,245,248) or Color3.fromRGB(207, 199, 183), worldConfig.Key == "JJK" and Enum.Material.Asphalt or Enum.Material.Concrete)
 		road.TopSurface = Enum.SurfaceType.Smooth
 
 		local gateZ = z - 126
