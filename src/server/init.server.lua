@@ -502,9 +502,24 @@ end
 for index, eggInfo in ipairs(eggs) do
 	local available = true
 
+	local function setCapsuleVisible(isVisible)
+		eggInfo.Egg.Transparency = isVisible and 0.2 or 1
+		local light = eggInfo.Egg:FindFirstChildOfClass("PointLight")
+		if light then light.Enabled = isVisible end
+		local highlight = eggInfo.Egg:FindFirstChildOfClass("Highlight")
+		if highlight then highlight.Enabled = isVisible end
+		if eggInfo.PreviewModel then
+			for _, descendant in ipairs(eggInfo.PreviewModel:GetDescendants()) do
+				if descendant:IsA("BasePart") then
+					descendant.Transparency = isVisible and 0.18 or 1
+				end
+			end
+		end
+	end
+
 	local function showEgg()
 		available = true
-		eggInfo.Egg.Transparency = 0
+		setCapsuleVisible(true)
 		eggInfo.Prompt.Enabled = true
 	end
 
@@ -532,7 +547,7 @@ for index, eggInfo in ipairs(eggs) do
 
 		available = false
 		eggInfo.Prompt.Enabled = false
-		eggInfo.Egg.Transparency = 1
+		setCapsuleVisible(false)
 
 		local rolled = Config.RollWorldHero(eggInfo.WorldKey, random)
 		rolled.Id = HttpService:GenerateGUID(false)
