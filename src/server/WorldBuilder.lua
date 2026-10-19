@@ -326,7 +326,7 @@ local function makeBase(parent, index, center, accent)
 		local x,z=coord[1],coord[2]
 		cylinder(model,"HeroStand",5.4,0.75,CFrame.new(center+Vector3.new(x,1.15,z)),Color3.fromRGB(220,216,203),Enum.Material.Concrete)
 		cylinder(model,"HeroStandRing",4.2,0.18,CFrame.new(center+Vector3.new(x,1.62,z)),accent,Enum.Material.Neon,0.35)
-		table.insert(standPositions,CFrame.new(center+Vector3.new(x,4.2,z)))
+		table.insert(standPositions,CFrame.new(center+Vector3.new(x,1.55,z)))
 	end
 
 	-- Small decorative crates/planters so the base does not feel empty.
