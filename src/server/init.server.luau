@@ -4,7 +4,7 @@ local DataStoreService = game:GetService("DataStoreService")
 local HttpService = game:GetService("HttpService")
 
 local Config = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("GameConfig"))
-local WorldBuilder = require(script:WaitForChild("WorldBuilder"))
+local WorldBuilder = require(script.Parent:WaitForChild("WorldBuilder"))
 
 local remotes = ReplicatedStorage:FindFirstChild("AnimeEggRemotes") or Instance.new("Folder")
 remotes.Name = "AnimeEggRemotes"
