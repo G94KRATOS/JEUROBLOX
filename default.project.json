@@ -33,7 +33,10 @@
       "$properties": {
         "Brightness": 2,
         "GlobalShadows": true,
-        "Technology": "Voxel"
+        "Technology": "Future",
+        "ShadowSoftness": 0.35,
+        "EnvironmentDiffuseScale": 0.55,
+        "EnvironmentSpecularScale": 0.75
       }
     },
 
