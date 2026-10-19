@@ -335,7 +335,7 @@ for i,world in ipairs(Config.Worlds) do
 	num.ZIndex=53
 	local title=label(row,world.DisplayName,UDim2.fromOffset(280,28),UDim2.fromOffset(65,5),14,C.White,Enum.Font.GothamBlack)
 	title.ZIndex=53
-	local sub=label(row,world.Name,UDim2.fromOffset(280,20),UDim2.fromOffset(65,31),11,C.Muted,Enum.Font.GothamMedium)
+	local sub=label(row,world.Name.."  •  x"..tostring(world.IncomeMultiplier or 1).." revenu",UDim2.fromOffset(300,20),UDim2.fromOffset(65,31),11,C.Muted,Enum.Font.GothamMedium)
 	sub.ZIndex=53
 	local req=label(row,tostring(world.RequiredSpeed).." SPEED",UDim2.fromOffset(140,56),UDim2.new(1,-150,0,0),12,world.Accent,Enum.Font.GothamBlack,Enum.TextXAlignment.Right)
 	req.ZIndex=53
@@ -556,9 +556,22 @@ local function refreshHUD()
 			missionAccent.BackgroundColor3=currentWorld.Accent
 		else
 			missionTitle.Text="CHOISIS UN MONDE • VOLE UNE CAPSULE"
-			worldChip.Text="HUB CENTRAL"
-			worldChip.TextColor3=C.Green
-			missionAccent.BackgroundColor3=C.Green
+			local nextLocked
+			for _, world in ipairs(Config.Worlds) do
+				if speedStat.Value < world.RequiredSpeed then
+					nextLocked = world
+					break
+				end
+			end
+			if nextLocked then
+				worldChip.Text="PROCHAIN : "..nextLocked.DisplayName.."  •  "..tostring(nextLocked.RequiredSpeed).." SPEED"
+				worldChip.TextColor3=nextLocked.Accent
+				missionAccent.BackgroundColor3=nextLocked.Accent
+			else
+				worldChip.Text="TOUS LES MONDES DEBLOQUES"
+				worldChip.TextColor3=C.Green
+				missionAccent.BackgroundColor3=C.Green
+			end
 		end
 	end
 end
