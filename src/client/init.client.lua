@@ -5,6 +5,8 @@ local StarterGui = game:GetService("StarterGui")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 
+local VisualController = require(script:WaitForChild("VisualController"))
+
 local Config = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("GameConfig"))
 local remotes = ReplicatedStorage:WaitForChild("AnimeEggRemotes")
 local notifyRemote = remotes:WaitForChild("Notify")
@@ -611,6 +613,8 @@ RunService.RenderStepped:Connect(function(dt)
 	currentWorld=detectWorld()
 	refreshHUD()
 end)
+
+VisualController.Start(player, Config)
 
 refreshHUD()
 task.delay(1.2,function()
