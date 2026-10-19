@@ -63,6 +63,7 @@ end
 local built = builtOrError
 local bases = built.Bases
 local eggs = built.Eggs
+local gates = built.Gates or {}
 
 local playerData = {}
 local random = Random.new()
@@ -88,6 +89,16 @@ local function computeIncome(player)
 
 	return math.floor(total * Config.GetIncomeMultiplier(data.BaseLevel))
 end
+
+local WORLD_STYLES = {
+	Naruto = {Body = Color3.fromRGB(79, 96, 87), Accent = Color3.fromRGB(255, 111, 57), Hair = Color3.fromRGB(45, 45, 49)},
+	OnePiece = {Body = Color3.fromRGB(72, 108, 142), Accent = Color3.fromRGB(61, 181, 255), Hair = Color3.fromRGB(65, 47, 36)},
+	DragonBall = {Body = Color3.fromRGB(225, 118, 46), Accent = Color3.fromRGB(255, 190, 54), Hair = Color3.fromRGB(35, 38, 44)},
+	DemonSlayer = {Body = Color3.fromRGB(69, 96, 77), Accent = Color3.fromRGB(255, 78, 95), Hair = Color3.fromRGB(38, 40, 44)},
+	JJK = {Body = Color3.fromRGB(57, 59, 73), Accent = Color3.fromRGB(160, 86, 255), Hair = Color3.fromRGB(42, 43, 49)},
+	Bleach = {Body = Color3.fromRGB(225, 228, 235), Accent = Color3.fromRGB(93, 213, 255), Hair = Color3.fromRGB(35, 36, 42)},
+	AOT = {Body = Color3.fromRGB(94, 104, 89), Accent = Color3.fromRGB(221, 110, 67), Hair = Color3.fromRGB(61, 45, 39)},
+}
 
 local HERO_STYLES = {
 	Iruka = {Body = Color3.fromRGB(88, 111, 88), Accent = Color3.fromRGB(119, 82, 56), Hair = Color3.fromRGB(67, 49, 38)},
@@ -243,7 +254,7 @@ local function createHeroVisual(owner, hero, index)
 	local base = bases[data.BaseIndex]
 	if not base then return end
 
-	local style = HERO_STYLES[hero.Name] or {
+	local style = HERO_STYLES[hero.Name] or WORLD_STYLES[hero.WorldKey] or {
 		Body = Color3.fromRGB(75, 82, 99),
 		Accent = rarityData(hero.Rarity).Color,
 		Hair = Color3.fromRGB(42, 43, 47),
@@ -522,20 +533,59 @@ for index, eggInfo in ipairs(eggs) do
 			return
 		end
 
+		local stats = player:FindFirstChild("leaderstats")
+		local speed = stats and stats:FindFirstChild("Speed")
+		local required = eggInfo.RequiredSpeed or 0
+		if not speed or speed.Value < required then
+			notify(player, "Il te faut " .. required .. " Speed pour voler cet œuf.", "Error")
+			return
+		end
+
 		available = false
 		eggInfo.Prompt.Enabled = false
 		eggInfo.Egg.Transparency = 1
 
-		local rolled = Config.RollNarutoHero(random)
+		local rolled = Config.RollWorldHero(eggInfo.WorldKey, random)
 		rolled.Id = HttpService:GenerateGUID(false)
 		rolled.Source = "Egg"
 		setCarry(player, rolled)
-		notify(player, rolled.Rarity .. " ! Ramène l'œuf à ta base.", "Success")
 
-		task.delay(Config.NarutoWorld.EggRespawn + index, function()
+		local world = Config.GetWorld(eggInfo.WorldKey)
+		local worldName = world and world.DisplayName or "WORLD"
+		notify(player, rolled.Rarity .. " - " .. rolled.Name .. " ! Retourne à ta base.", "Success")
+
+		task.delay((eggInfo.Respawn or 10) + (index % 3), function()
 			if eggInfo.Egg and eggInfo.Egg.Parent then
 				showEgg()
 			end
+		end)
+	end)
+end
+
+local gateDebounce = {}
+for _, gate in ipairs(gates) do
+	gate.Trigger.Touched:Connect(function(hit)
+		local character = hit.Parent
+		local player = character and Players:GetPlayerFromCharacter(character)
+		if not player then return end
+
+		local key = tostring(player.UserId) .. ":" .. gate.WorldKey
+		if gateDebounce[key] then return end
+		gateDebounce[key] = true
+
+		local stats = player:FindFirstChild("leaderstats")
+		local speed = stats and stats:FindFirstChild("Speed")
+		if speed and speed.Value < gate.RequiredSpeed then
+			local root = character:FindFirstChild("HumanoidRootPart")
+			if root then
+				root.CFrame = gate.ReturnCFrame
+			end
+			local world = Config.GetWorld(gate.WorldKey)
+			notify(player, (world and world.DisplayName or gate.WorldKey) .. " : " .. gate.RequiredSpeed .. " Speed requis.", "Error")
+		end
+
+		task.delay(0.8, function()
+			gateDebounce[key] = nil
 		end)
 	end)
 end
@@ -559,6 +609,7 @@ local function serialize(player)
 			Id = hero.Id,
 			Name = hero.Name,
 			Rarity = hero.Rarity,
+			WorldKey = hero.WorldKey,
 		})
 	end
 
