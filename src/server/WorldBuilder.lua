@@ -145,9 +145,15 @@ local function lowFence(parent, center, length, alongX, color)
 end
 
 local function streetLamp(parent, pos, color)
-	part(parent, "LampPost", Vector3.new(0.55, 9, 0.55), CFrame.new(pos + Vector3.new(0, 4.5, 0)), Color3.fromRGB(57, 61, 69), Enum.Material.Metal)
-	local head = part(parent, "LampHead", Vector3.new(2.8, 1.8, 2.8), CFrame.new(pos + Vector3.new(0, 9.3, 0)), color, Enum.Material.Neon)
-	pointLight(head, color, 18, 1.4)
+	local dark = Color3.fromRGB(60, 52, 47)
+	cylinder(parent, "LampBase", 2.4, 0.7, CFrame.new(pos + Vector3.new(0,0.4,0)), dark, Enum.Material.Metal)
+	local pole = cylinder(parent, "LampPost", 0.75, 8.6, CFrame.new(pos + Vector3.new(0,4.8,0)) * CFrame.Angles(0,0,math.rad(90)), dark, Enum.Material.Metal)
+	pole.CFrame = CFrame.new(pos + Vector3.new(0,4.8,0))
+	part(parent, "LampArm", Vector3.new(3.4,0.55,0.55), CFrame.new(pos + Vector3.new(1.4,8.7,0)), dark, Enum.Material.Metal)
+	local bulb = ball(parent, "LampBulb", 1.8, pos + Vector3.new(2.8,8.2,0), color, Enum.Material.Glass, 0.08)
+	pointLight(bulb, color, 15, 0.9)
+	local cap = cylinder(parent, "LampCap", 2.6, 0.45, CFrame.new(pos + Vector3.new(2.8,9.15,0)), dark, Enum.Material.Metal)
+	cap.CanCollide = false
 end
 
 local function tree(parent, pos, foliage, scale)
@@ -245,11 +251,22 @@ local function makeKiosk(parent, pos, title, accent)
 	local model = Instance.new("Model")
 	model.Name = title .. "_Kiosk"
 	model.Parent = parent
-	part(model, "Body", Vector3.new(32, 16, 24), CFrame.new(pos + Vector3.new(0, 8, 0)), Color3.fromRGB(238, 240, 245), Enum.Material.SmoothPlastic)
-	part(model, "Roof", Vector3.new(38, 3, 30), CFrame.new(pos + Vector3.new(0, 17, 0)), Color3.fromRGB(42, 45, 54), Enum.Material.Slate)
-	part(model, "Glow", Vector3.new(34, 0.6, 2), CFrame.new(pos + Vector3.new(0, 14, -12.2)), accent, Enum.Material.Neon)
-	local sign = part(model, "Sign", Vector3.new(20, 6, 1), CFrame.new(pos + Vector3.new(0, 10, -12.6)), Color3.fromRGB(31, 34, 42), Enum.Material.SmoothPlastic)
-	surfaceLabel(sign, Enum.NormalId.Front, title, accent, Color3.fromRGB(31, 34, 42))
+	local dark = Color3.fromRGB(45,48,56)
+	local cream = Color3.fromRGB(242,235,218)
+
+	cylinder(model,"KioskPlinth",30,1.1,CFrame.new(pos+Vector3.new(0,0.6,0)),Color3.fromRGB(113,115,117),Enum.Material.Concrete)
+	part(model,"Counter",Vector3.new(26,4.5,16),CFrame.new(pos+Vector3.new(0,3.2,0)),cream,Enum.Material.SmoothPlastic)
+	for _,x in ipairs({-10.5,10.5}) do
+		part(model,"Post",Vector3.new(2.2,11,2.2),CFrame.new(pos+Vector3.new(x,9,0)),dark,Enum.Material.Metal)
+	end
+	part(model,"Canopy",Vector3.new(30,2.2,20),CFrame.new(pos+Vector3.new(0,14.5,0)),dark,Enum.Material.Slate)
+	part(model,"CanopyAccent",Vector3.new(26,0.35,17),CFrame.new(pos+Vector3.new(0,13.25,0)),accent,Enum.Material.Neon,0.22)
+	local sign=part(model,"Sign",Vector3.new(16,4.3,0.65),CFrame.new(pos+Vector3.new(0,10,-8.45)),Color3.fromRGB(250,247,239),Enum.Material.SmoothPlastic)
+	surfaceLabel(sign,Enum.NormalId.Front,title,Color3.fromRGB(36,38,44),Color3.fromRGB(250,247,239))
+
+	for _,x in ipairs({-7,0,7}) do
+		part(model,"DisplayItem",Vector3.new(3,3,3),CFrame.new(pos+Vector3.new(x,6,-5.8)),accent,Enum.Material.Glass,0.18)
+	end
 	return model
 end
 
@@ -261,7 +278,7 @@ local function makeBase(parent, index, center, accent)
 	local wood = Color3.fromRGB(142, 83, 44)
 	local woodDark = Color3.fromRGB(82, 55, 39)
 	local machineDark = Color3.fromRGB(38, 42, 50)
-	local grass = Color3.fromRGB(108, 215, 80)
+	local grass = Color3.fromRGB(116, 194, 90)
 
 	-- Bright fenced tycoon plot, closer to modern simulator composition.
 	local floor = part(model, "Floor", Vector3.new(58, 0.8, 50), CFrame.new(center), grass, Enum.Material.Grass)
@@ -382,9 +399,9 @@ local function eggShrine(parent, world, pos, index)
 	cylinder(model, "CapsuleTopRing", 9.2, 0.28, CFrame.new(pos + Vector3.new(0, 13.85, 0)), accent, Enum.Material.Neon, 0.12)
 
 	-- World silhouette inside the pod.
-	local core = ball(model, "CapsuleCore", 4.8, CFrame.new(pos + Vector3.new(0, 8.0, 0)), accent, Enum.Material.ForceField, 0.2)
+	local core = ball(model, "CapsuleCore", 3.8, CFrame.new(pos + Vector3.new(0, 8.0, 0)), accent, Enum.Material.Glass, 0.18)
 	core.CanCollide = false
-	pointLight(core, accent, 18, 1.6)
+	pointLight(core, accent, 12, 0.8)
 	addHighlight(core, accent)
 
 	-- Simple character silhouette gives the pod a visible reward target.
@@ -423,11 +440,34 @@ end
 local function basicHouse(parent, pos, accent, scale)
 	scale = scale or 1
 	local w, d, h = 24 * scale, 18 * scale, 13 * scale
-	part(parent, "HouseBody", Vector3.new(w, h, d), CFrame.new(pos + Vector3.new(0, h / 2, 0)), Color3.fromRGB(232, 214, 182), Enum.Material.WoodPlanks)
-	part(parent, "HouseBase", Vector3.new(w + 3, 0.8, d + 3), CFrame.new(pos + Vector3.new(0, 0.4, 0)), Color3.fromRGB(101, 94, 83), Enum.Material.Slate)
-	part(parent, "Roof", Vector3.new(w + 5, 2, d + 5), CFrame.new(pos + Vector3.new(0, h + 2, 0)), Color3.fromRGB(56, 60, 68), Enum.Material.Slate)
-	part(parent, "RoofGlow", Vector3.new(w + 1, 0.6, d + 1), CFrame.new(pos + Vector3.new(0, h + 3.1, 0)), accent, Enum.Material.Neon, 0.1)
-	part(parent, "Door", Vector3.new(5, 8, 0.7), CFrame.new(pos + Vector3.new(0, 4, -d / 2 - 0.4)), Color3.fromRGB(78, 52, 39), Enum.Material.Wood)
+	local wall = Color3.fromRGB(226, 209, 178)
+	local timber = Color3.fromRGB(104, 72, 51)
+	local roof = Color3.fromRGB(67, 60, 62)
+
+	part(parent, "HouseBase", Vector3.new(w + 3, 1.0, d + 3), CFrame.new(pos + Vector3.new(0,0.5,0)), Color3.fromRGB(119, 108, 92), Enum.Material.Concrete)
+	part(parent, "HouseBody", Vector3.new(w, h, d), CFrame.new(pos + Vector3.new(0,h/2 + 1,0)), wall, Enum.Material.Plaster)
+
+	-- Timber framing adds detail without external assets.
+	for _, x in ipairs({-w/2 + 1.2, w/2 - 1.2}) do
+		part(parent,"HouseTrimV",Vector3.new(1.2,h,0.6),CFrame.new(pos+Vector3.new(x,h/2+1,-d/2-0.32)),timber,Enum.Material.WoodPlanks)
+	end
+	part(parent,"HouseTrimH",Vector3.new(w,0.9,0.6),CFrame.new(pos+Vector3.new(0,h-2,-d/2-0.32)),timber,Enum.Material.WoodPlanks)
+
+	-- Two sloped roof halves.
+	wedge(parent,"RoofL",Vector3.new(d+5,7,w/2+3),CFrame.new(pos+Vector3.new(-w/4-1.2,h+4,0))*CFrame.Angles(0,math.rad(90),0),roof,Enum.Material.Slate)
+	wedge(parent,"RoofR",Vector3.new(d+5,7,w/2+3),CFrame.new(pos+Vector3.new(w/4+1.2,h+4,0))*CFrame.Angles(0,math.rad(-90),0),roof,Enum.Material.Slate)
+	part(parent,"RoofRidge",Vector3.new(1.2,1.0,d+7),CFrame.new(pos+Vector3.new(0,h+7.4,0)),Color3.fromRGB(49,47,51),Enum.Material.Slate)
+
+	local door = part(parent,"Door",Vector3.new(5,8,0.65),CFrame.new(pos+Vector3.new(0,5,-d/2-0.4)),Color3.fromRGB(78,52,39),Enum.Material.WoodPlanks)
+	part(parent,"DoorTop",Vector3.new(6.5,0.65,0.9),CFrame.new(pos+Vector3.new(0,9.2,-d/2-0.45)),timber,Enum.Material.WoodPlanks)
+
+	for _, x in ipairs({-7*scale,7*scale}) do
+		local win = part(parent,"Window",Vector3.new(4.2*scale,3.8*scale,0.35),CFrame.new(pos+Vector3.new(x,7*scale,-d/2-0.5)),Color3.fromRGB(124,193,224),Enum.Material.Glass,0.22)
+		part(parent,"WindowFrameV",Vector3.new(0.35,3.8*scale,0.5),win.CFrame*CFrame.new(0,0,-0.2),timber,Enum.Material.Wood)
+		part(parent,"WindowFrameH",Vector3.new(4.2*scale,0.35,0.5),win.CFrame*CFrame.new(0,0,-0.2),timber,Enum.Material.Wood)
+	end
+
+	part(parent,"HouseAccent",Vector3.new(w*0.62,0.26,0.45),CFrame.new(pos+Vector3.new(0,h-0.6,-d/2-0.5)),accent,Enum.Material.Neon,0.35)
 end
 
 local function ninjaWorld(parent, world)
@@ -861,7 +901,7 @@ function WorldBuilder.Build(Config)
 	decorateBoundary(world, minZ, maxZ)
 
 	-- Hub inspired by modern simulator flow: bright lawn, fenced plots, central steal lane.
-	local hubFloor=part(world,"HubFloor",Vector3.new(320,4,290),CFrame.new(0,-1,-185),Color3.fromRGB(101,205,78),Enum.Material.Grass)
+	local hubFloor=part(world,"HubFloor",Vector3.new(320,4,290),CFrame.new(0,-1,-185),Color3.fromRGB(121,194,91),Enum.Material.Grass)
 	hubFloor.TopSurface=Enum.SurfaceType.Smooth
 	local hubRoad=part(world,"HubRoad",Vector3.new(46,0.55,300),CFrame.new(0,1.2,-180),Color3.fromRGB(210,196,165),Enum.Material.Concrete)
 	hubRoad.TopSurface=Enum.SurfaceType.Smooth
