@@ -2,6 +2,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
 local HttpService = game:GetService("HttpService")
+local TweenService = game:GetService("TweenService")
 
 local Config = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("GameConfig"))
 local WorldBuilder = require(script:WaitForChild("WorldBuilder"))
@@ -559,7 +560,18 @@ for index, eggInfo in ipairs(eggs) do
 
 		available = false
 		eggInfo.Prompt.Enabled = false
-		setCapsuleVisible(false)
+
+		if eggInfo.Top and eggInfo.TopBaseCFrame then
+			TweenService:Create(
+				eggInfo.Top,
+				TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+				{CFrame = eggInfo.TopBaseCFrame * CFrame.new(0, 4.5, 0)}
+			):Play()
+		end
+
+		task.delay(0.14, function()
+			setCapsuleVisible(false)
+		end)
 
 		local rolled = Config.RollWorldHero(eggInfo.WorldKey, random)
 		rolled.Id = HttpService:GenerateGUID(false)
@@ -569,6 +581,12 @@ for index, eggInfo in ipairs(eggs) do
 		local world = Config.GetWorld(eggInfo.WorldKey)
 		local worldName = world and world.DisplayName or "WORLD"
 		notify(player, rolled.Rarity .. " - " .. rolled.Name .. " sort de la capsule et te suit ! Retourne à ta base.", "Success")
+
+		task.delay(0.65, function()
+			if eggInfo.Top and eggInfo.Top.Parent and eggInfo.TopBaseCFrame then
+				TweenService:Create(eggInfo.Top, TweenInfo.new(0.25), {CFrame = eggInfo.TopBaseCFrame}):Play()
+			end
+		end)
 
 		task.delay((eggInfo.Respawn or 10) + (index % 3), function()
 			if eggInfo.Egg and eggInfo.Egg.Parent then
