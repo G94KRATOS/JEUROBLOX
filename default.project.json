@@ -10,18 +10,15 @@
     },
 
     "ServerScriptService": {
-      "GameServer": {
-        "$path": "src/server/init.server.luau"
-      },
-      "WorldBuilder": {
-        "$path": "src/server/WorldBuilder.luau"
+      "Server": {
+        "$path": "src/server"
       }
     },
 
     "StarterPlayer": {
       "StarterPlayerScripts": {
         "Client": {
-          "$path": "src/client/init.client.luau"
+          "$path": "src/client"
         }
       }
     },
