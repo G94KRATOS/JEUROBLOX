@@ -243,8 +243,6 @@ function WorldBuilder.Build(Config)
 	local world=Instance.new("Model")
 	world.Name="AnimeEggWorld"
 	world.Parent=workspace
-
-	workspace.FallenPartsDestroyHeight=-100
 	Lighting.ClockTime=13.5
 	Lighting.Brightness=2.7
 	Lighting.Ambient=Color3.fromRGB(150,153,162)
